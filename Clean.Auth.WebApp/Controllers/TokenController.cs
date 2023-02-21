@@ -38,7 +38,7 @@ namespace Clean.Auth.WebApp.Controllers
             }
             else
             {
-                return BadRequest();
+                return BadRequest("Wrong Credentials");
             }
         }
         private async Task<bool> IsValidUsernameAndPassword(string username, string password)
