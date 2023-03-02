@@ -9,7 +9,10 @@ var configuration = builder.Configuration;
 
 
 builder.Services.SetupAuthentication(configuration);
-//builder.Services.SetAuthorization();
+
+
+// Clean DB for application data
+builder.Services.SetupCleanDb(configuration);
 
 // Identity DB for Identity data
 builder.Services.SetupIdentityDatabase(configuration);
@@ -28,8 +31,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.EnsureIdentityDbIsCreated();
-    app.SeedIdentityDataAsync().Wait();
+    //app.EnsureIdentityDbIsCreated();
+    //app.SeedIdentityDataAsync().Wait();
 
     app.UseSwagger();
     app.UseSwaggerUI(x =>

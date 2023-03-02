@@ -1,6 +1,7 @@
 using Clean.Auth.WebApp.Config;
 using Clean.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -10,6 +11,9 @@ var configuration = builder.Configuration;
 
 builder.Services.SetupAuthentication(configuration);
 //builder.Services.SetAuthorization();
+
+
+
 
 // Identity DB for Identity data
 builder.Services.SetupIdentityDatabase(configuration);

@@ -1,4 +1,6 @@
-﻿using Clean.Infrastructure.Identity.Models;
+﻿
+using Clean.Infrastructure.CleanDb.Models;
+using Clean.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,16 +8,14 @@ namespace Clean.Collector.WebApp.Config
 {
     public static class DatabaseConfig
     {
+        public static void SetupCleanDb(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddDbContext<CleanContext>(options =>
+               options.UseSqlServer(configuration.GetConnectionString("Clean"))
+               );
+        }
         public static void SetupIdentityDatabase(this IServiceCollection services, IConfiguration configuration)
         {
-
-            //services.AddDbContext<ApplicationDbContext>(options =>
-            //    options.UseSqlServer(
-            //        configuration.GetConnectionString("CleanIdentity")));
-
-            //services.AddIdentity<ApplicationUser, IdentityRole>()
-            //    .AddEntityFrameworkStores<ApplicationDbContext>()
-            //    .AddDefaultTokenProviders();
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("CleanIdentity"))
