@@ -32,6 +32,7 @@ namespace Clean.Infrastructure.CleanDb.Seed
                         };
 
                         cleanContext.Ranks.Add(rank);
+                        cleanContext.SaveChanges();
 
                         if (rank.Id <= 0)
                         {
@@ -45,7 +46,10 @@ namespace Clean.Infrastructure.CleanDb.Seed
                     }
                     else
                     {
-                        rootRank.Id = rank.Id;
+                        if (item == "President")
+                        {
+                            rootRank.Id = rank.Id;
+                        }
                     }
                 }
 
@@ -53,6 +57,7 @@ namespace Clean.Infrastructure.CleanDb.Seed
                 {
                     throw new Exception($"Could not find The root rank");
                 }
+                
                 return rootRank;
         }
 
@@ -73,6 +78,7 @@ namespace Clean.Infrastructure.CleanDb.Seed
                     };
 
                     cleanContext.DepartmentTypes.Add(type);
+                    cleanContext.SaveChanges();
 
                     if (type.Id <= 0)
                     {
@@ -86,7 +92,10 @@ namespace Clean.Infrastructure.CleanDb.Seed
                 }
                 else
                 {
-                    rootDepartmentType.Id = type.Id;
+                    if (item == "Central")
+                    {
+                        rootDepartmentType.Id = type.Id;
+                    }
                 }
             }
 
@@ -116,6 +125,7 @@ namespace Clean.Infrastructure.CleanDb.Seed
                     };
 
                     cleanContext.Countries.Add(country);
+                    cleanContext.SaveChanges();
 
                     if (country.Id <= 0)
                     {
@@ -130,7 +140,10 @@ namespace Clean.Infrastructure.CleanDb.Seed
                 }
                 else
                 {
-                    rootCountry.Id = country.Id;
+                    if (item == "Morocco")
+                    {
+                        rootCountry.Id = country.Id;
+                    }
                 }
             }
 
@@ -160,6 +173,7 @@ namespace Clean.Infrastructure.CleanDb.Seed
                 };
 
                 cleanContext.Cities.Add(rootCity);
+                cleanContext.SaveChanges();
 
                 if (rootCity.Id <= 0)
                 {
@@ -188,6 +202,16 @@ namespace Clean.Infrastructure.CleanDb.Seed
                 };
                 cleanContext.Departments.Add(rootDepartment);
 
+                try
+                {
+                    cleanContext.SaveChanges();
+                }
+                catch(Exception ex)
+                {
+
+                }
+                
+
                 if (rootDepartment.Id <= 0)
                 {
                     throw new Exception("Could not Insert the root department");
@@ -212,6 +236,9 @@ namespace Clean.Infrastructure.CleanDb.Seed
         {
             //Insert the root Employee
 
+            try
+            {
+
 
             var rootEmployee = cleanContext.Employees.FirstOrDefault(e => e.SSN == "ssn");
 
@@ -228,6 +255,7 @@ namespace Clean.Infrastructure.CleanDb.Seed
                 };
 
                 cleanContext.Employees.Add(rootEmployee);
+                cleanContext.SaveChanges();
 
                 if (rootEmployee.Id <= 0)
                 {
@@ -241,6 +269,12 @@ namespace Clean.Infrastructure.CleanDb.Seed
             }
 
             return rootEmployee;
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return new Employee();
         }
 
 
@@ -261,6 +295,7 @@ namespace Clean.Infrastructure.CleanDb.Seed
                 };
 
                 cleanContext.Users.Add(rootUser);
+                cleanContext.SaveChanges();
 
                 rootUser = cleanContext.Users.FirstOrDefault(u => u.Id.Equals(user.Id));
 
@@ -271,7 +306,7 @@ namespace Clean.Infrastructure.CleanDb.Seed
             }
         }
 
-        public static async Task SeedAsync(CleanContext cleanContext,UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task SeedAsync(CleanContext cleanContext,UserManager<ApplicationUser> userManager)
         {
 
             using (cleanContext)

@@ -77,8 +77,8 @@ namespace Clean.Infrastructure.CleanDb.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DepartmentTypeId = table.Column<int>(type: "int", nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: true),
-                    ManagerId = table.Column<int>(type: "int", nullable: true),
+                    ParentId = table.Column<int?>(type: "int", nullable: true),
+                    ManagerId = table.Column<int?>(type: "int", nullable: true),
                     CityId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", nullable: false),
                     ShortName = table.Column<string>(type: "nvarchar(20)", nullable: false),
@@ -114,7 +114,7 @@ namespace Clean.Infrastructure.CleanDb.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RankId = table.Column<int>(type: "int", nullable: false),
-                    ActiveCardId = table.Column<int>(type: "int", nullable: true),
+                    ActiveCardId = table.Column<int?>(type: "int", nullable: true),
                     DepartmentId = table.Column<int>(type: "int", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(35)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(35)", nullable: false),

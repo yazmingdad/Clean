@@ -55,12 +55,9 @@ namespace Clean.Infrastructure.Extensions
                 var services = serviceScope.ServiceProvider;
 
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-
-               // var identityContext = services.GetRequiredService<ApplicationDbContext>();
                 var cleanContext = services.GetRequiredService<CleanContext>();
 
-                await Infrastructure.CleanDb.Seed.CleanContextDataSeed.SeedAsync(cleanContext,userManager, roleManager);
+                await Infrastructure.CleanDb.Seed.CleanContextDataSeed.SeedAsync(cleanContext,userManager);
             }
         }
 

@@ -10,4 +10,4 @@
 * Add-Migration -Name "InitialCleanDbCreation" -OutputDir "CleanDb\Migrations" -Context "Clean.Infrastructure.CleanDb.Models.CleanContext" -Project "Clean.Infrastructure"
 
 ## To run the migrations:
-* Update-Database -Context "CleanArchitectureCosmosDB.Infrastructure.Identity.Models.ApplicationDbContext" -Project "CleanArchitectureCosmosDB.Infrastructure"
+* Update-Database -Context "Clean.Infrastructure.CleanDb.Models.CleanContext" -Project "Clean.Infrastructure"

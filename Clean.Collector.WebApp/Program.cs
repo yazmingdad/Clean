@@ -33,6 +33,8 @@ if (app.Environment.IsDevelopment())
 {
     //app.EnsureIdentityDbIsCreated();
     //app.SeedIdentityDataAsync().Wait();
+    app.EnsureCleanDbIsCreated();
+    app.SeedCleanDataAsync().Wait();
 
     app.UseSwagger();
     app.UseSwaggerUI(x =>

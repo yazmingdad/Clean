@@ -45,8 +45,8 @@ app.UseCors(
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.EnsureIdentityDbIsCreated();
-    app.SeedIdentityDataAsync().Wait();
+    //app.EnsureIdentityDbIsCreated();
+    //app.SeedIdentityDataAsync().Wait();
 
     app.UseSwagger();
     app.UseSwaggerUI(x =>

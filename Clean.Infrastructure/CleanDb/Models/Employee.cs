@@ -12,6 +12,7 @@ namespace Clean.Infrastructure.CleanDb.Models
     public class Employee
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required]
@@ -21,9 +22,9 @@ namespace Clean.Infrastructure.CleanDb.Models
         public virtual Rank Rank { get; set; }
 
         [Required]
-        public int ActiveCardId { get; set; }
+        public int? ActiveCardId { get; set; }
         [ForeignKey("ActiveCardId")]
-        public virtual Card ActiveCard { get; set; }
+        public virtual Card? ActiveCard { get; set; }
 
         [Required]
         public int DepartmentId { get; set; }

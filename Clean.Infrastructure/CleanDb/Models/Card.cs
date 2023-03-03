@@ -11,6 +11,7 @@ namespace Clean.Infrastructure.CleanDb.Models
     public class Card
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required]

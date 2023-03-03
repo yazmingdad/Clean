@@ -11,21 +11,22 @@ namespace Clean.Infrastructure.CleanDb.Models
     public class Department
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [Required]
         public int DepartmentTypeId { get; set; }
         [ForeignKey("DepartmentTypeId")]
         public virtual DepartmentType DepartmentType { get; set; }
 
-        public int ParentId { get; set; }
+        public int? ParentId { get; set; }
 
         [ForeignKey("ParentId")]
-        public virtual Department Parent { get; set; }
+        public virtual Department? Parent { get; set; }
 
-        public int ManagerId { get; set; }
+        public int? ManagerId { get; set; }
 
         [ForeignKey("ManagerId")]
-        public virtual Employee Manager { get; set; }
+        public virtual Employee? Manager { get; set; }
 
         [Required]
         public int CityId { get; set; }
