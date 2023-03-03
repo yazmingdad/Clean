@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
@@ -244,6 +245,8 @@ namespace Clean.Infrastructure.CleanDb.Seed
 
             if (rootEmployee == null)
             {
+                var buildDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var filePath = buildDir + @"\CleanDb\Seed\Data\default.png";
                 rootEmployee = new Employee
                 {
                     RankId = rootRank.Id,
@@ -251,7 +254,7 @@ namespace Clean.Infrastructure.CleanDb.Seed
                     FirstName = user.UserName,
                     LastName = user.UserName,
                     SSN = "ssn",
-                    Avatar = new byte[32],
+                    Avatar = File.ReadAllBytes(filePath),
                 };
 
                 cleanContext.Employees.Add(rootEmployee);
@@ -297,7 +300,7 @@ namespace Clean.Infrastructure.CleanDb.Seed
                 cleanContext.Users.Add(rootUser);
                 cleanContext.SaveChanges();
 
-                rootUser = cleanContext.Users.FirstOrDefault(u => u.Id.Equals(user.Id));
+                rootUser = cleanContext.Users.FirstOrDefault(u => u.Id.Equals(new Guid(user.Id)));
 
                 if (rootUser == null)
                 {

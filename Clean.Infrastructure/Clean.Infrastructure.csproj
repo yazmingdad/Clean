@@ -30,4 +30,10 @@
     <Folder Include="Identity\Migrations\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="CleanDb\Seed\Data\default.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
