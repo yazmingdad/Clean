@@ -2,6 +2,7 @@
 using Clean.Infrastructure.CleanDb.Models;
 using Clean.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
@@ -133,18 +134,11 @@ namespace Clean.Infrastructure.CleanDb.Seed
                         throw new Exception($"Could not Insert {item} country");
                     }
 
-                    if (item == "Morocco")
-                    {
-                        rootCountry.Id = country.Id;
-                    }
-
                 }
-                else
+
+                if (item == "Morocco")
                 {
-                    if (item == "Morocco")
-                    {
-                        rootCountry.Id = country.Id;
-                    }
+                    rootCountry.Id = country.Id;
                 }
             }
 
@@ -161,28 +155,55 @@ namespace Clean.Infrastructure.CleanDb.Seed
         {
             // Insert the root city
 
-            var rootCity = cleanContext.Cities.FirstOrDefault(c => c.Name == "Rabat");
+            City rootCity= new City();
+            var cities = LoadCities();
 
-            if (rootCity == null)
+            foreach (var item in cities)
             {
-                rootCity = new City()
-                {
-                    CountryId = rootCountry.Id,
-                    Name = "Rabat",
-                    Latitude = "34.02199",
-                    Longitude = "-6.83762"
-                };
+                var city = cleanContext.Cities.FirstOrDefault(c => c.Name == item.Name);
 
-                cleanContext.Cities.Add(rootCity);
-                cleanContext.SaveChanges();
-
-                if (rootCity.Id <= 0)
+                if (city == null)
                 {
-                    throw new Exception("Cannot add the Rabat City");
+                    city = item;
+                    cleanContext.Cities.Add(city);
+                    cleanContext.SaveChanges(); 
+
+                    if(city.Id <= 0)
+                    {
+                        throw new Exception($"Couldn't insert {item.Name} city");
+                    }
+                }
+
+                if(city.Name== "Rabat")
+                {
+                    rootCity = city;
                 }
             }
 
             return rootCity;
+
+            //var rootCity = cleanContext.Cities.FirstOrDefault(c => c.Name == "Rabat");
+
+            //if (rootCity == null)
+            //{
+            //    rootCity = new City()
+            //    {
+            //        CountryId = rootCountry.Id,
+            //        Name = "Rabat",
+            //        Latitude = "34.02199",
+            //        Longitude = "-6.83762"
+            //    };
+
+            //    cleanContext.Cities.Add(rootCity);
+            //    cleanContext.SaveChanges();
+
+            //    if (rootCity.Id <= 0)
+            //    {
+            //        throw new Exception("Cannot add the Rabat City");
+            //    }
+            //}
+
+            //return rootCity;
         }
 
         // Insert the root Department
@@ -560,5 +581,20 @@ namespace Clean.Infrastructure.CleanDb.Seed
                 cleanContext.SaveChanges();
             }
         }
+
+        public static List<City> LoadCities()
+        {
+            var buildDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var filePath = buildDir + @"\CleanDb\Seed\Data\cities.json";
+
+            using (StreamReader r = new StreamReader(filePath))
+            {
+                string json = r.ReadToEnd();
+                List<City> items = JsonConvert.DeserializeObject<List<City>>(json);
+                return items?? new List<City>();
+            }
+        }
     }
+
+
 }

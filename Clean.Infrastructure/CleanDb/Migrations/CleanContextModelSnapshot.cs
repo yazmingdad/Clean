@@ -163,7 +163,7 @@ namespace Clean.Infrastructure.CleanDb.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("ActiveCardId")
+                    b.Property<int?>("ActiveCardId")
                         .HasColumnType("int");
 
                     b.Property<byte[]>("Avatar")
