@@ -19,8 +19,17 @@ namespace Clean.Infrastructure.CleanDb.Models
 
         [ForeignKey("CountryId")]
         public virtual Country Country { get; set; }
+
+        [Required]
+        [Column(TypeName = "nvarchar(100)")]
         public string Name { get; set; }
+
+        [Required]
+        [Column(TypeName = "nvarchar(25)")]
         public string Latitude { get; set; }
+
+        [Required]
+        [Column(TypeName = "nvarchar(25)")]
         public string Longitude { get; set; }
     }
 }

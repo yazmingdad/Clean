@@ -22,27 +22,31 @@ namespace Clean.Infrastructure.CleanDb.Models
         public virtual Rank Rank { get; set; }
 
         //[Required]
-        public int? ActiveCardId { get; set; }
-        [ForeignKey("ActiveCardId")]
-        public virtual Card? ActiveCard { get; set; }
+        //public int? ActiveCardId { get; set; }
+        //[ForeignKey("ActiveCardId")]
+        //public virtual Card? ActiveCard { get; set; }
 
         [Required]
         public int DepartmentId { get; set; }
 
         [ForeignKey("DepartmentId")]
-        public virtual Department Department { get; set; }  
+        public virtual Department Department { get; set; }
 
         [Required]
+        [Column(TypeName = "nvarchar(35)")]
         public string FirstName { get; set; }
 
         [Required]
+        [Column(TypeName = "nvarchar(35)")]
         public string LastName { get; set; }
 
         [Required]
         public byte[] Avatar { get; set; }
 
         [Required]
+        [Column(TypeName = "nvarchar(35)")]
         public string SSN { get; set; }
         public bool IsRetired { get; set; }
+        public virtual ICollection<Card> Cards { get; set; }
     }
 }

@@ -32,8 +32,15 @@ namespace Clean.Infrastructure.CleanDb.Models
         public int CityId { get; set; }
         [ForeignKey("CityId")]
         public virtual City City { get; set; }
+
+        [Required]
+        [Column(TypeName = "nvarchar(200)")]
         public string Name { get; set; }
+
+        [Required]
+        [Column(TypeName = "nvarchar(20)")]
         public string ShortName { get; set; }
+
         public bool IsDown { get; set; }
 
     }
