@@ -21,7 +21,7 @@ namespace Clean.Infrastructure.CleanDb.Models
         [ForeignKey("RankId")]
         public virtual Rank Rank { get; set; }
 
-        [Required]
+        //[Required]
         public int? ActiveCardId { get; set; }
         [ForeignKey("ActiveCardId")]
         public virtual Card? ActiveCard { get; set; }

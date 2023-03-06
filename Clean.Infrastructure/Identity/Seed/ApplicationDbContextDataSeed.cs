@@ -13,7 +13,7 @@ namespace Clean.Infrastructure.Identity.Seed
             await roleManager.CreateAsync(new IdentityRole(ApplicationIdentityConstants.Roles.Member));
 
             // New admin user
-            string adminUserName = "shawn@test.com";
+            string adminUserName = "cleaner";
             var adminUser = new ApplicationUser
             {
                 UserName = adminUserName,

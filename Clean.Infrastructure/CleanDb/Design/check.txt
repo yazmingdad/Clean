@@ -1,0 +1,624 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace Clean.Infrastructure.CleanDb.Migrations
+{
+    public partial class InitialCleanDbCreation : Migration
+    {
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.CreateTable(
+                name: "Countries",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(200)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Countries", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DepartmentTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DepartmentTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Ranks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(200)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ranks", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Cities",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CountryId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    Latitude = table.Column<string>(type: "nvarchar(25)", nullable: false),
+                    Longitude = table.Column<string>(type: "nvarchar(25)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cities", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Cities_Countries_CountryId",
+                        column: x => x.CountryId,
+                        principalTable: "Countries",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Departments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DepartmentTypeId = table.Column<int>(type: "int", nullable: false),
+                    ParentId = table.Column<int?>(type: "int", nullable: true),
+                    ManagerId = table.Column<int?>(type: "int", nullable: true),
+                    CityId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", nullable: false),
+                    ShortName = table.Column<string>(type: "nvarchar(20)", nullable: false),
+                    IsDown = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Departments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Departments_Cities_CityId",
+                        column: x => x.CityId,
+                        principalTable: "Cities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Departments_Departments_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "Departments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Departments_DepartmentTypes_DepartmentTypeId",
+                        column: x => x.DepartmentTypeId,
+                        principalTable: "DepartmentTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Employees",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RankId = table.Column<int>(type: "int", nullable: false),
+                    ActiveCardId = table.Column<int?>(type: "int", nullable: true),
+                    DepartmentId = table.Column<int>(type: "int", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(35)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(35)", nullable: false),
+                    Avatar = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    SSN = table.Column<string>(type: "nvarchar(35)", nullable: false),
+                    IsRetired = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Employees", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Employees_Departments_DepartmentId",
+                        column: x => x.DepartmentId,
+                        principalTable: "Departments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Employees_Ranks_RankId",
+                        column: x => x.RankId,
+                        principalTable: "Ranks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Cards",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    Number = table.Column<string>(type: "nvarchar(40)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cards", x => x.Id);
+                    table.ForeignKey(
+                    name: "FK_Cards_Employees_EmployeeId",
+                    column: x => x.EmployeeId,
+                    principalTable: "Employees",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Restrict);
+
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Employees_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "Employees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cards_EmployeeId",
+                table: "Cards",
+                column: "EmployeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cities_CountryId",
+                table: "Cities",
+                column: "CountryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Departments_CityId",
+                table: "Departments",
+                column: "CityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Departments_DepartmentTypeId",
+                table: "Departments",
+                column: "DepartmentTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Departments_ManagerId",
+                table: "Departments",
+                column: "ManagerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Departments_ParentId",
+                table: "Departments",
+                column: "ParentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Employees_ActiveCardId",
+                table: "Employees",
+                column: "ActiveCardId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Employees_DepartmentId",
+                table: "Employees",
+                column: "DepartmentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Employees_RankId",
+                table: "Employees",
+                column: "RankId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_EmployeeId",
+                table: "Users",
+                column: "EmployeeId");
+
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Departments_Employees_ManagerId",
+                table: "Departments",
+                column: "ManagerId",
+                principalTable: "Employees",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Employees_Cards_ActiveCardId",
+                table: "Employees",
+                column: "ActiveCardId",
+                principalTable: "Cards",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+        }
+
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            //migrationBuilder.DropForeignKey(
+            //    name: "FK_Cards_Employees_EmployeeId",
+            //    table: "Cards");
+
+            //migrationBuilder.DropForeignKey(
+            //    name: "FK_Departments_Employees_ManagerId",
+            //    table: "Departments");
+
+            //migrationBuilder.DropTable(
+            //    name: "Users");
+
+            //migrationBuilder.DropTable(
+            //    name: "Employees");
+
+            //migrationBuilder.DropTable(
+            //    name: "Cards");
+
+            //migrationBuilder.DropTable(
+            //    name: "Departments");
+
+            //migrationBuilder.DropTable(
+            //    name: "Ranks");
+
+            //migrationBuilder.DropTable(
+            //    name: "Cities");
+
+            //migrationBuilder.DropTable(
+            //    name: "DepartmentTypes");
+
+            //migrationBuilder.DropTable(
+            //    name: "Countries");
+        }
+    }
+}
+
+
+
+// <auto-generated />
+using System;
+using Clean.Infrastructure.CleanDb.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+
+#nullable disable
+
+namespace Clean.Infrastructure.CleanDb.Migrations
+{
+    [DbContext(typeof(CleanContext))]
+    partial class CleanContextModelSnapshot : ModelSnapshot
+    {
+        protected override void BuildModel(ModelBuilder modelBuilder)
+        {
+#pragma warning disable 612, 618
+            modelBuilder
+                .HasAnnotation("ProductVersion", "6.0.12")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.Card", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(40)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("Cards");
+                });
+
+            modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.City", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Latitude")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(25)");
+
+                    b.Property<string>("Longitude")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(25)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountryId");
+
+                    b.ToTable("Cities");
+                });
+
+            modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.Country", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Countries");
+                });
+
+            modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.Department", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DepartmentTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDown")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ManagerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ShortName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("DepartmentTypeId");
+
+                    b.HasIndex("ManagerId");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("Departments");
+                });
+
+            modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.DepartmentType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DepartmentTypes");
+                });
+
+            modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.Employee", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("ActiveCardId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("Avatar")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(35)");
+
+                    b.Property<bool>("IsRetired")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(35)");
+
+                    b.Property<int>("RankId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SSN")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(35)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActiveCardId");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("RankId");
+
+                    b.ToTable("Employees");
+                });
+
+            modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.Rank", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Ranks");
+                });
+
+            modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.Card", b =>
+                {
+                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.City", b =>
+                {
+                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Country", "Country")
+                        .WithMany()
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Country");
+                });
+
+            modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.Department", b =>
+                {
+                    b.HasOne("Clean.Infrastructure.CleanDb.Models.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Clean.Infrastructure.CleanDb.Models.DepartmentType", "DepartmentType")
+                        .WithMany()
+                        .HasForeignKey("DepartmentTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Employee", "Manager")
+                        .WithMany()
+                        .HasForeignKey("ManagerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                        //.IsRequired();
+
+                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Department", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                        //.IsRequired();
+
+                    b.Navigation("City");
+
+                    b.Navigation("DepartmentType");
+
+                    b.Navigation("Manager");
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.Employee", b =>
+                {
+                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Card", "ActiveCard")
+                        .WithMany()
+                        .HasForeignKey("ActiveCardId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                       // .IsRequired();
+
+                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Rank", "Rank")
+                        .WithMany()
+                        .HasForeignKey("RankId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ActiveCard");
+
+                    b.Navigation("Department");
+
+                    b.Navigation("Rank");
+                });
+
+            modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.User", b =>
+                {
+                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+#pragma warning restore 612, 618
+        }
+    }
+}

@@ -2,6 +2,8 @@
 using Clean.Infrastructure.CleanDb.Models;
 using Clean.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -11,6 +13,7 @@ using System.Reflection;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Clean.Infrastructure.CleanDb.Seed
 {
@@ -18,41 +21,34 @@ namespace Clean.Infrastructure.CleanDb.Seed
     {
         //Insert the ranks
         private static Rank InsertRanks(CleanContext cleanContext)
-        {
+        {      
                 Rank rootRank = new Rank();
 
-                foreach (var item in CleanConstants.Ranks)
+                var ranks = Loader.LoadFromJson<Rank>("ranks");
+
+                foreach (var item in ranks)
                 {
 
-                    var rank = cleanContext.Ranks.FirstOrDefault(d => d.Name == item);
+                    var rank = cleanContext.Ranks.FirstOrDefault(r => r.Name == item.Name);
 
                     if (rank == null)
                     {
-                        rank = new Rank
-                        {
-                            Name = item,
-                        };
+                        rank = item;
 
                         cleanContext.Ranks.Add(rank);
                         cleanContext.SaveChanges();
 
                         if (rank.Id <= 0)
                         {
-                            throw new Exception($"Could not Insert {item} rank");
+                            throw new Exception($"Could not Insert {item.Name} rank");
                         }
+                    }
 
-                        if (item == "President")
-                        {
-                            rootRank.Id = rank.Id;
-                        }
-                    }
-                    else
+                    if (item.Name == "President")
                     {
-                        if (item == "President")
-                        {
-                            rootRank.Id = rank.Id;
-                        }
+                        rootRank.Id = rank.Id;
                     }
+
                 }
 
                 if (rootRank.Id <= 0)
@@ -68,36 +64,27 @@ namespace Clean.Infrastructure.CleanDb.Seed
         {
             DepartmentType rootDepartmentType = new DepartmentType();
 
-            foreach (var item in CleanConstants.DepartmentTypes)
+            var departmentTypes = Loader.LoadFromJson<DepartmentType>("departmentTypes");
+
+            foreach (var item in departmentTypes)
             {
-                var type = cleanContext.DepartmentTypes.FirstOrDefault(d => d.Name == item);
+                var type = cleanContext.DepartmentTypes.FirstOrDefault(dt => dt.Name == item.Name);
 
                 if (type == null)
                 {
-                    type = new DepartmentType
-                    {
-                        Name = item
-                    };
+                    type = item;
 
                     cleanContext.DepartmentTypes.Add(type);
                     cleanContext.SaveChanges();
 
                     if (type.Id <= 0)
                     {
-                        throw new Exception($"Could not Insert {item} department type");
-                    }
-
-                    if (item == "Central")
-                    {
-                        rootDepartmentType.Id = type.Id;
+                        throw new Exception($"Could not Insert {item.Name} department type");
                     }
                 }
-                else
+                if (item.Name == "Central")
                 {
-                    if (item == "Central")
-                    {
-                        rootDepartmentType.Id = type.Id;
-                    }
+                    rootDepartmentType.Id = type.Id;
                 }
             }
 
@@ -115,16 +102,15 @@ namespace Clean.Infrastructure.CleanDb.Seed
             // Insert Countries
             Country rootCountry = new Country();
 
-            foreach (var item in CleanConstants.Countries)
+            var countries = Loader.LoadFromJson<Country>("countries");
+
+            foreach (var item in countries)
             {
-                var country = cleanContext.Countries.FirstOrDefault(d => d.Name == item);
+                var country = cleanContext.Countries.FirstOrDefault(c => c.Name == item.Name);
 
                 if (country == null)
                 {
-                    country = new Country
-                    {
-                        Name = item
-                    };
+                    country = item;
 
                     cleanContext.Countries.Add(country);
                     cleanContext.SaveChanges();
@@ -136,7 +122,7 @@ namespace Clean.Infrastructure.CleanDb.Seed
 
                 }
 
-                if (item == "Morocco")
+                if (item.Name == "Morocco")
                 {
                     rootCountry.Id = country.Id;
                 }
@@ -156,7 +142,8 @@ namespace Clean.Infrastructure.CleanDb.Seed
             // Insert the root city
 
             City rootCity= new City();
-            var cities = LoadCities();
+
+            var cities = Loader.LoadFromJson<City>("cities");
 
             foreach (var item in cities)
             {
@@ -181,29 +168,6 @@ namespace Clean.Infrastructure.CleanDb.Seed
             }
 
             return rootCity;
-
-            //var rootCity = cleanContext.Cities.FirstOrDefault(c => c.Name == "Rabat");
-
-            //if (rootCity == null)
-            //{
-            //    rootCity = new City()
-            //    {
-            //        CountryId = rootCountry.Id,
-            //        Name = "Rabat",
-            //        Latitude = "34.02199",
-            //        Longitude = "-6.83762"
-            //    };
-
-            //    cleanContext.Cities.Add(rootCity);
-            //    cleanContext.SaveChanges();
-
-            //    if (rootCity.Id <= 0)
-            //    {
-            //        throw new Exception("Cannot add the Rabat City");
-            //    }
-            //}
-
-            //return rootCity;
         }
 
         // Insert the root Department
@@ -211,39 +175,33 @@ namespace Clean.Infrastructure.CleanDb.Seed
         {
             // Insert the root Department
 
-            var rootDepartment = cleanContext.Departments.FirstOrDefault(d => d.Name == CleanConstants.DefaultDepartment);
+            var department = Loader.LoadFromJson<Department>("departments").FirstOrDefault();
+
+            if(department == null)
+            {
+                throw new Exception();
+            }
+
+            var rootDepartment = cleanContext.Departments.FirstOrDefault(d => d.Name == department.Name);
 
             if (rootDepartment == null)
             {
-                rootDepartment = new Department
-                {
-                    Name = CleanConstants.DefaultDepartment,
-                    ShortName = "Clean",
-                    DepartmentTypeId = rootDepartmentType.Id,
-                    CityId = rootCity.Id
-                };
+                rootDepartment = department;
+                rootDepartment.DepartmentTypeId = rootDepartmentType.Id;
+                rootDepartment.CityId = rootCity.Id;
                 cleanContext.Departments.Add(rootDepartment);
-
-                try
-                {
-                    cleanContext.SaveChanges();
-                }
-                catch(Exception ex)
-                {
-
-                }
+                cleanContext.SaveChanges();
+ 
                 
-
                 if (rootDepartment.Id <= 0)
                 {
                     throw new Exception("Could not Insert the root department");
                 }
 
-                if (rootDepartment.ParentId == 0)
-                {
-                    rootDepartment.ParentId = rootDepartment.Id;
-                    cleanContext.Departments.Update(rootDepartment);
-                }
+
+                rootDepartment.ParentId = rootDepartment.Id;
+                cleanContext.Departments.Update(rootDepartment);
+                
             }
 
             return rootDepartment;
@@ -258,16 +216,12 @@ namespace Clean.Infrastructure.CleanDb.Seed
         {
             //Insert the root Employee
 
-            try
-            {
-
-
             var rootEmployee = cleanContext.Employees.FirstOrDefault(e => e.SSN == "ssn");
 
             if (rootEmployee == null)
             {
                 var buildDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var filePath = buildDir + @"\CleanDb\Seed\Data\default.png";
+                var filePath = buildDir + @"\CleanDb\Seed\Data\Initial\default.png";
                 rootEmployee = new Employee
                 {
                     RankId = rootRank.Id,
@@ -287,18 +241,15 @@ namespace Clean.Infrastructure.CleanDb.Seed
                 }
             }
 
-            if (rootDepartment.ManagerId == 0)
+            if (rootDepartment.ManagerId == 0 || rootDepartment.ManagerId == null)
             {
                 rootDepartment.ManagerId = rootEmployee.Id;
+                cleanContext.Update(rootDepartment);
+                cleanContext.SaveChanges();
             }
 
             return rootEmployee;
-            }
-            catch (Exception ex)
-            {
 
-            }
-            return new Employee();
         }
 
 
@@ -307,7 +258,7 @@ namespace Clean.Infrastructure.CleanDb.Seed
         {
             //Insert the User
 
-            var rootUser = cleanContext.Users.FirstOrDefault(u => u.Id.Equals(user.Id));
+            var rootUser = cleanContext.Users.FirstOrDefault(u => u.Id.Equals(new Guid(user.Id)));
 
             if (rootUser == null)
             {
@@ -335,231 +286,13 @@ namespace Clean.Infrastructure.CleanDb.Seed
 
             using (cleanContext)
             {
-                cleanContext.Database.EnsureCreated();
+                var exists = (cleanContext.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists();
 
-                //Insert the ranks
+                if (!exists)
+                {
+                    throw new Exception("Clean Database doesn't exist");
 
-                //Rank rootRank = new Rank();
-
-                //foreach (var item in CleanConstants.Ranks)
-                //{
-
-                //    var rank = cleanContext.Ranks.FirstOrDefault(d => d.Name == item);
-
-                //    if (rank == null)
-                //    {
-                //        rank = new Rank
-                //        {
-                //            Name = item,
-                //        };
-
-                //        cleanContext.Ranks.Add(rank);
-
-                //        if(rank.Id <= 0)
-                //        {
-                //            throw new Exception($"Could not Insert {item} rank");
-                //        }
-
-                //        if (item == "President")
-                //        {
-                //            rootRank.Id= rank.Id;
-                //        }
-                //    }
-                //    else
-                //    {
-                //        rootRank.Id = rank.Id;
-                //    }
-                //}
-
-                //if (rootRank.Id <= 0)
-                //{
-                //    throw new Exception($"Could not find The root rank");
-                //}
-
-                //// Insert the department types
-                //DepartmentType rootDepartmentType = new DepartmentType();
-
-                //foreach (var item in CleanConstants.DepartmentTypes)
-                //{
-                //    var type = cleanContext.DepartmentTypes.FirstOrDefault(d => d.Name == item);
-
-                //    if (type == null)
-                //    {
-                //        type = new DepartmentType
-                //        {
-                //          Name = item
-                //        };
-
-                //        cleanContext.DepartmentTypes.Add(type);
-
-                //        if(type.Id <= 0)
-                //        {
-                //            throw new Exception($"Could not Insert {item} department type");
-                //        }
-
-                //        if (item == "Central")
-                //        {
-                //            rootDepartmentType.Id = type.Id;
-                //        }
-                //    }
-                //    else
-                //    {
-                //        rootDepartmentType.Id = type.Id;
-                //    }
-                //}
-
-                //if(rootDepartmentType.Id <= 0) 
-                //{
-                //    throw new Exception($"Could not find The root department type");
-                //}
-
-                //// Insert Countries
-                //Country rootCountry = new Country();
-
-                //foreach (var item in CleanConstants.Countries)
-                //{
-                //    var country = cleanContext.Countries.FirstOrDefault(d => d.Name == item);
-
-                //    if (country == null)
-                //    {
-                //        country = new Country
-                //        {
-                //            Name = item
-                //        };
-
-                //        cleanContext.Countries.Add(country);
-
-                //        if(country.Id <= 0)
-                //        {
-                //            throw new Exception($"Could not Insert {item} country");
-                //        }
-
-                //        if (item == "Morocco")
-                //        {
-                //            rootCountry.Id = country.Id;
-                //        }
-
-                //    }
-                //    else
-                //    {
-                //        rootCountry.Id = country.Id;
-                //    }
-                //}
-
-                //if(rootCountry.Id == 0)
-                //{
-                //    throw new Exception($"Could not find The root country");
-                //}
-
-
-                // Insert the root city
-
-                //var rootCity = cleanContext.Cities.FirstOrDefault(c => c.Name == "Rabat");
-
-                //if (rootCity == null)
-                //{
-                //    rootCity = new City()
-                //    {
-                //        CountryId = rootCountry.Id,
-                //        Name = "Rabat",
-                //        Latitude = "34.02199",
-                //        Longitude = "-6.83762"
-                //    };
-
-                //    cleanContext.Cities.Add(rootCity);
-
-                //    if (rootCity.Id <= 0)
-                //    {
-                //        throw new Exception("Cannot add the Rabat City");
-                //    }
-                //}
-
-                // Insert the root Department
-
-                //var rootDepartment = cleanContext.Departments.FirstOrDefault(d => d.Name == CleanConstants.DefaultDepartment);
-
-                //if (rootDepartment == null)
-                //{
-                //    rootDepartment = new Department
-                //    {
-                //        Name = CleanConstants.DefaultDepartment,
-                //        ShortName = "Clean",
-                //        DepartmentTypeId = rootDepartmentType.Id,
-                //        CityId = rootCity.Id
-                //    };
-                //    cleanContext.Departments.Add(rootDepartment);
-
-                //    if (rootDepartment.Id <= 0)
-                //    {
-                //        throw new Exception("Could not Insert the root department");
-                //    }
-
-                //    if (rootDepartment.ParentId == 0)
-                //    {
-                //        rootDepartment.ParentId = rootDepartment.Id;
-                //        cleanContext.Departments.Update(rootDepartment);
-                //    }
-                //}
-
-                ////Insert the root Employee
-
-                //var user = await userManager.FindByNameAsync(CleanConstants.DefaultEmployee);
-
-                //if (user == null)
-                //{
-                //    throw new Exception("Identity User does not exist");
-                //}
-
-
-                //var rootEmployee = cleanContext.Employees.FirstOrDefault(e => e.SSN == "ssn");
-
-                //if (rootEmployee == null)
-                //{
-                //    rootEmployee = new Employee
-                //    {
-                //        RankId = rootRank.Id,
-                //        DepartmentId = rootDepartment.Id,
-                //        FirstName = user.UserName,
-                //        LastName = user.UserName,
-                //        SSN = "ssn",
-                //        Avatar = new byte[32],
-                //    };
-
-                //    cleanContext.Employees.Add(rootEmployee);
-
-                //    if (rootEmployee.Id <= 0)
-                //    {
-                //        throw new Exception("Could not insert the root Employee");
-                //    }
-                //}
-
-                //if (rootDepartment.ManagerId == 0)
-                //{
-                //    rootDepartment.ManagerId = rootEmployee.Id;
-                //}
-
-                //Insert the User
-
-                //var rootUser = cleanContext.Users.FirstOrDefault(u => u.Id.Equals(user.Id));
-
-                //if (rootUser == null)
-                //{
-
-                //    rootUser = new User
-                //    {
-                //        Id = new Guid(user.Id),
-                //        EmployeeId = rootEmployee.Id,
-                //    };
-
-                //    cleanContext.Users.Add(rootUser);
-
-                //    rootUser = cleanContext.Users.FirstOrDefault(u => u.Id.Equals(user.Id));
-
-                //    if (rootUser == null)
-                //    {
-                //        throw new Exception("Could not create the root User in Clean database");
-                //    }
-                //}
+                }
 
                 var rootRank = InsertRanks(cleanContext);
                 var rootDepartmentType = InsertDepartmentTypes(cleanContext);
@@ -574,24 +307,11 @@ namespace Clean.Infrastructure.CleanDb.Seed
                     throw new Exception("Identity User does not exist");
                 }
 
-                var rootEmployee = InsertRootEmployee(cleanContext,rootRank, rootDepartment,user);
+                var rootEmployee = InsertRootEmployee(cleanContext,rootRank, rootDepartment,user);            
 
                 InsertRootUser(cleanContext, rootEmployee, user);
 
                 cleanContext.SaveChanges();
-            }
-        }
-
-        public static List<City> LoadCities()
-        {
-            var buildDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var filePath = buildDir + @"\CleanDb\Seed\Data\cities.json";
-
-            using (StreamReader r = new StreamReader(filePath))
-            {
-                string json = r.ReadToEnd();
-                List<City> items = JsonConvert.DeserializeObject<List<City>>(json);
-                return items?? new List<City>();
             }
         }
     }

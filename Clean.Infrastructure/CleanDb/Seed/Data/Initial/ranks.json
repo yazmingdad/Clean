@@ -1,0 +1,17 @@
+[
+  { "Name": "President" },
+  { "Name": "Vice President" },
+  { "Name": "Chief Operating Officer" },
+  { "Name": "Chief Executive Officer" },
+  { "Name": "Chief Information Officer" },
+  { "Name": "Chief Financial Officer" },
+  { "Name": "Head of marketing" },
+  { "Name": "Head of human resources" },
+  { "Name": "Head of customer services" },
+  { "Name": "Administrative officer" },
+  { "Name": "Accountant" },
+  { "Name": "Manager" },
+  { "Name": "Supervisor" },
+  { "Name": "Assistant" },
+  { "Name": "Employee" }
+]

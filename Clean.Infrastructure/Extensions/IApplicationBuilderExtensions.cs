@@ -2,6 +2,8 @@
 using Clean.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Clean.Infrastructure.Extensions
@@ -36,15 +38,21 @@ namespace Clean.Infrastructure.Extensions
 
         public static void EnsureCleanDbIsCreated(this IApplicationBuilder builder)
         {
+
+
             using (var serviceScope = builder.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var services = serviceScope.ServiceProvider;
 
                 var dbContext = services.GetRequiredService<CleanContext>();
 
-                // Ensure the database is created.
-                // Note this does not use migrations. If database may be updated using migrations, use DbContext.Database.Migrate() instead.
-                dbContext.Database.EnsureCreated();
+                var exists = (dbContext.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists();
+
+                if (!exists)
+                {
+                    throw new Exception("Clean Database doesn't exist");
+
+                }
             }
         }
 

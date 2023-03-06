@@ -111,14 +111,14 @@ namespace Clean.Infrastructure.CleanDb.Migrations
                     b.Property<bool>("IsDown")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ManagerId")
+                    b.Property<int?>("ManagerId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int>("ParentId")
+                    b.Property<int?>("ParentId")
                         .HasColumnType("int");
 
                     b.Property<string>("ShortName")
@@ -274,14 +274,14 @@ namespace Clean.Infrastructure.CleanDb.Migrations
                     b.HasOne("Clean.Infrastructure.CleanDb.Models.Employee", "Manager")
                         .WithMany()
                         .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+                        //.IsRequired();
 
                     b.HasOne("Clean.Infrastructure.CleanDb.Models.Department", "Parent")
                         .WithMany()
                         .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+                        //.IsRequired();
 
                     b.Navigation("City");
 
@@ -295,10 +295,10 @@ namespace Clean.Infrastructure.CleanDb.Migrations
             modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.Employee", b =>
                 {
                     b.HasOne("Clean.Infrastructure.CleanDb.Models.Card", "ActiveCard")
-                        .WithMany()
+                        .WithOne()
                         .HasForeignKey("ActiveCardId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+                       // .IsRequired();
 
                     b.HasOne("Clean.Infrastructure.CleanDb.Models.Department", "Department")
                         .WithMany()
