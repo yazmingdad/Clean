@@ -16,12 +16,12 @@ namespace Clean.Infrastructure.CleanDb.Models
         //[Required]
         public int DepartmentTypeId { get; set; }
         //[ForeignKey("DepartmentTypeId")]
-        public virtual DepartmentType DepartmentType { get; set; }
+        //public virtual DepartmentType DepartmentType { get; set; }
 
         public int? ParentId { get; set; }
 
         //[ForeignKey("ParentId")]
-        public virtual Department? Parent { get; set; }
+        //public virtual Department? Parent { get; set; }
 
         public int? ManagerId { get; set; }
 
@@ -31,7 +31,7 @@ namespace Clean.Infrastructure.CleanDb.Models
         //[Required]
         public int CityId { get; set; }
         //[ForeignKey("CityId")]
-        public virtual City City { get; set; }
+        //public virtual City City { get; set; }
 
         //[Required]
         //[Column(TypeName = "nvarchar(200)")]

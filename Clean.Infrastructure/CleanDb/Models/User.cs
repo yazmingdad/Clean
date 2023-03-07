@@ -17,7 +17,7 @@ namespace Clean.Infrastructure.CleanDb.Models
         public int EmployeeId { get; set; }
 
         //[ForeignKey("EmployeeId")]
-        public virtual Employee Employee { get; set; }
+        //public virtual Employee Employee { get; set; }
        // public string Username { get; set; }
     }
 }

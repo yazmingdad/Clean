@@ -44,15 +44,11 @@ namespace Clean.Infrastructure.Extensions
             {
                 var services = serviceScope.ServiceProvider;
 
-                var dbContext = services.GetRequiredService<CleanContext>();
+                var cleanContext = services.GetRequiredService<CleanContext>();
 
-                var exists = (dbContext.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists();
-
-                if (!exists)
-                {
-                    throw new Exception("Clean Database doesn't exist");
-
-                }
+                // Ensure the database is created.
+                // Note this does not use migrations. If database may be updated using migrations, use DbContext.Database.Migrate() instead.
+                cleanContext.Database.EnsureCreated();
             }
         }
 

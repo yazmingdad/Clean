@@ -19,18 +19,18 @@ namespace Clean.Infrastructure.CleanDb.Models
         public int RankId { get; set; }
 
         //[ForeignKey("RankId")]
-        public virtual Rank Rank { get; set; }
+        //public virtual Rank Rank { get; set; }
 
         //[Required]
         public int? ActiveCardId { get; set; }
         //[ForeignKey("ActiveCardId")]
-        public virtual Card? ActiveCard { get; set; }
+        //public virtual Card? ActiveCard { get; set; }
 
         //[Required]
         public int DepartmentId { get; set; }
 
         //[ForeignKey("DepartmentId")]
-        public virtual Department Department { get; set; }
+        //public virtual Department Department { get; set; }
 
         //[Required]
         //[Column(TypeName = "nvarchar(35)")]
@@ -47,6 +47,6 @@ namespace Clean.Infrastructure.CleanDb.Models
         //[Column(TypeName = "nvarchar(35)")]
         public string SSN { get; set; }
         public bool IsRetired { get; set; }
-        public virtual ICollection<Card> Cards { get; set; }
+        //public virtual ICollection<Card> Cards { get; set; }
     }
 }

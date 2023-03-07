@@ -311,9 +311,6 @@ namespace Clean.Infrastructure.CleanDb.Seed
 
                 InsertRootUser(cleanContext, rootEmployee, user);
 
-                var test = rootDepartment;
-                var test2 = rootEmployee;
-
                 cleanContext.SaveChanges();
             }
         }

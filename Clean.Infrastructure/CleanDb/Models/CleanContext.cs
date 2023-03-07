@@ -48,7 +48,7 @@ namespace Clean.Infrastructure.CleanDb.Models
                 c.Property(p => p.Name).HasColumnType("nvarchar(100)").IsRequired();
                 c.Property(p => p.Latitude).HasColumnType("nvarchar(25)").IsRequired();
                 c.Property(p => p.Longitude).HasColumnType("nvarchar(25)").IsRequired();
-                c.HasOne<Country>(ci=>ci.Country).WithMany().HasForeignKey(c => c.CountryId).IsRequired();
+                c.HasOne<Country>().WithMany().HasForeignKey(c => c.CountryId).IsRequired();
                 c.ToTable("Cities");
             });
 
@@ -56,13 +56,13 @@ namespace Clean.Infrastructure.CleanDb.Models
                 c.HasKey(p => p.Id);
                 c.Property(p => p.Number).HasColumnType("nvarchar(40)").IsRequired();
                 c.Property(p => p.IsActive);
-                c.HasOne<Employee>().WithMany(e=>e.Cards).HasForeignKey(c => c.EmployeeId).IsRequired();
+                c.HasOne<Employee>().WithMany().HasForeignKey(c => c.EmployeeId).IsRequired();
                 c.ToTable("Cards");
             });
 
             modelBuilder.Entity<User>(u => {
                 u.HasKey(p => p.Id);
-                u.HasOne(u=>u.Employee).WithOne().HasForeignKey<User>("EmployeeId").IsRequired();
+                u.HasOne<Employee>().WithOne().HasForeignKey<User>("EmployeeId").IsRequired();
                 u.ToTable("Users");
             });
 
@@ -71,9 +71,9 @@ namespace Clean.Infrastructure.CleanDb.Models
                 d.Property(p => p.Name).HasColumnType("nvarchar(200)").IsRequired();
                 d.Property(p => p.ShortName).HasColumnType("nvarchar(20)").IsRequired();
                 d.Property(p => p.IsDown);
-                d.HasOne(d=>d.City).WithMany().HasForeignKey(d => d.CityId).IsRequired();
-                d.HasOne(d=>d.DepartmentType).WithMany().HasForeignKey(d => d.DepartmentTypeId).IsRequired();
-                d.HasOne(d => d.Parent).WithMany().HasForeignKey(d => d.ParentId);
+                d.HasOne<City>().WithMany().HasForeignKey(d => d.CityId).IsRequired();
+                d.HasOne<DepartmentType>().WithMany().HasForeignKey(d => d.DepartmentTypeId).IsRequired();
+                d.HasOne<Department>().WithMany().HasForeignKey(d => d.ParentId);
                 d.HasOne<Employee>().WithOne().HasForeignKey<Department>("ManagerId");
                 d.ToTable("Departments");
             });
@@ -86,10 +86,9 @@ namespace Clean.Infrastructure.CleanDb.Models
                 em.Property(p => p.SSN).HasColumnType("nvarchar(35)").IsRequired();
                 em.Property(p => p.Avatar).IsRequired();
                 em.Property(p => p.IsRetired);
-                em.HasOne(em=>em.ActiveCard).WithOne().HasForeignKey<Employee>("ActiveCardId");
-                em.HasOne(em=>em.Rank).WithMany().HasForeignKey(e => e.RankId).IsRequired();
-                em.HasOne(em=>em.Department).WithMany().HasForeignKey(e => e.DepartmentId).IsRequired();
-                em.HasMany(em => em.Cards).WithOne();
+                em.HasOne<Card>().WithOne().HasForeignKey<Employee>("ActiveCardId");
+                em.HasOne<Rank>().WithMany().HasForeignKey(e => e.RankId).IsRequired();
+                em.HasOne<Department>().WithMany().HasForeignKey(e => e.DepartmentId).IsRequired();
                 em.ToTable("Employees");
             });
 

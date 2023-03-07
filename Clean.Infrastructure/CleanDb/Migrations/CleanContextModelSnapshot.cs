@@ -243,7 +243,7 @@ namespace Clean.Infrastructure.CleanDb.Migrations
             modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.Card", b =>
                 {
                     b.HasOne("Clean.Infrastructure.CleanDb.Models.Employee", null)
-                        .WithMany("Cards")
+                        .WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -251,24 +251,22 @@ namespace Clean.Infrastructure.CleanDb.Migrations
 
             modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.City", b =>
                 {
-                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Country", "Country")
+                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Country", null)
                         .WithMany()
                         .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Country");
                 });
 
             modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.Department", b =>
                 {
-                    b.HasOne("Clean.Infrastructure.CleanDb.Models.City", "City")
+                    b.HasOne("Clean.Infrastructure.CleanDb.Models.City", null)
                         .WithMany()
                         .HasForeignKey("CityId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Clean.Infrastructure.CleanDb.Models.DepartmentType", "DepartmentType")
+                    b.HasOne("Clean.Infrastructure.CleanDb.Models.DepartmentType", null)
                         .WithMany()
                         .HasForeignKey("DepartmentTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -279,58 +277,39 @@ namespace Clean.Infrastructure.CleanDb.Migrations
                         .HasForeignKey("Clean.Infrastructure.CleanDb.Models.Department", "ManagerId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Department", "Parent")
+                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Department", null)
                         .WithMany()
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("City");
-
-                    b.Navigation("DepartmentType");
-
-                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.Employee", b =>
                 {
-                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Card", "ActiveCard")
+                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Card", null)
                         .WithOne()
                         .HasForeignKey("Clean.Infrastructure.CleanDb.Models.Employee", "ActiveCardId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Department", "Department")
+                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Department", null)
                         .WithMany()
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Rank", "Rank")
+                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Rank", null)
                         .WithMany()
                         .HasForeignKey("RankId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("ActiveCard");
-
-                    b.Navigation("Department");
-
-                    b.Navigation("Rank");
                 });
 
             modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.User", b =>
                 {
-                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Employee", "Employee")
+                    b.HasOne("Clean.Infrastructure.CleanDb.Models.Employee", null)
                         .WithOne()
                         .HasForeignKey("Clean.Infrastructure.CleanDb.Models.User", "EmployeeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Employee");
-                });
-
-            modelBuilder.Entity("Clean.Infrastructure.CleanDb.Models.Employee", b =>
-                {
-                    b.Navigation("Cards");
                 });
 #pragma warning restore 612, 618
         }
