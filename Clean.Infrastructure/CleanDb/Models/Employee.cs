@@ -11,40 +11,40 @@ namespace Clean.Infrastructure.CleanDb.Models
 {
     public class Employee
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //[Key]
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required]
+        //[Required]
         public int RankId { get; set; }
 
-        [ForeignKey("RankId")]
+        //[ForeignKey("RankId")]
         public virtual Rank Rank { get; set; }
 
         //[Required]
-        //public int? ActiveCardId { get; set; }
+        public int? ActiveCardId { get; set; }
         //[ForeignKey("ActiveCardId")]
-        //public virtual Card? ActiveCard { get; set; }
+        public virtual Card? ActiveCard { get; set; }
 
-        [Required]
+        //[Required]
         public int DepartmentId { get; set; }
 
-        [ForeignKey("DepartmentId")]
+        //[ForeignKey("DepartmentId")]
         public virtual Department Department { get; set; }
 
-        [Required]
-        [Column(TypeName = "nvarchar(35)")]
+        //[Required]
+        //[Column(TypeName = "nvarchar(35)")]
         public string FirstName { get; set; }
 
-        [Required]
-        [Column(TypeName = "nvarchar(35)")]
+        //[Required]
+        //[Column(TypeName = "nvarchar(35)")]
         public string LastName { get; set; }
 
-        [Required]
+        //[Required]
         public byte[] Avatar { get; set; }
 
-        [Required]
-        [Column(TypeName = "nvarchar(35)")]
+        //[Required]
+        //[Column(TypeName = "nvarchar(35)")]
         public string SSN { get; set; }
         public bool IsRetired { get; set; }
         public virtual ICollection<Card> Cards { get; set; }

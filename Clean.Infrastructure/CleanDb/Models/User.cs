@@ -10,13 +10,13 @@ namespace Clean.Infrastructure.CleanDb.Models
 {
     public class User
     {
-        [Key]
+        //[Key]
         public Guid Id { get; set; }
 
-        [Required]
+        //[Required]
         public int EmployeeId { get; set; }
 
-        [ForeignKey("EmployeeId")]
+        //[ForeignKey("EmployeeId")]
         public virtual Employee Employee { get; set; }
        // public string Username { get; set; }
     }

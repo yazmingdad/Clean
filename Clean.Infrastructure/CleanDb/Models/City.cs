@@ -10,26 +10,26 @@ namespace Clean.Infrastructure.CleanDb.Models
 {
     public class City
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //[Key]
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required]  
+        //[Required]  
         public int CountryId { get; set; }
 
-        [ForeignKey("CountryId")]
+        //[ForeignKey("CountryId")]
         public virtual Country Country { get; set; }
 
-        [Required]
-        [Column(TypeName = "nvarchar(100)")]
+        //[Required]
+        //[Column(TypeName = "nvarchar(100)")]
         public string Name { get; set; }
 
-        [Required]
-        [Column(TypeName = "nvarchar(25)")]
+        //[Required]
+        //[Column(TypeName = "nvarchar(25)")]
         public string Latitude { get; set; }
 
-        [Required]
-        [Column(TypeName = "nvarchar(25)")]
+        //[Required]
+        //[Column(TypeName = "nvarchar(25)")]
         public string Longitude { get; set; }
     }
 }

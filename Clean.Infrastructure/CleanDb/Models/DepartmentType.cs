@@ -10,12 +10,12 @@ namespace Clean.Infrastructure.CleanDb.Models
 {
     public class DepartmentType
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //[Key]
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required]
-        [Column(TypeName = "nvarchar(100)")]
+        //[Required]
+        //[Column(TypeName = "nvarchar(100)")]
         public string Name { get; set; }
     }
 }

@@ -10,18 +10,18 @@ namespace Clean.Infrastructure.CleanDb.Models
 {
     public class Card
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //[Key]
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required]
+        //[Required]
         public int EmployeeId { get; set; }
 
-        [ForeignKey("EmployeeId")]
-        public virtual Employee Employee { get; set; }
+        //[ForeignKey("EmployeeId")]
+        //public virtual Employee Employee { get; set; }
 
-        [Required]
-        [Column(TypeName = "nvarchar(40)")]
+        //[Required]
+        //[Column(TypeName = "nvarchar(40)")]
         public string Number { get; set; }
         public bool IsActive { get; set; }
 

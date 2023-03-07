@@ -311,11 +311,8 @@ namespace Clean.Infrastructure.CleanDb.Seed
 
                 InsertRootUser(cleanContext, rootEmployee, user);
 
-                var cards = rootEmployee.Cards;
-                
-               // var card = rootEmployee.ActiveCard;
-                //var maneger = rootDepartment.Manager;
-                //var parent = rootDepartment.Parent;
+                var test = rootDepartment;
+                var test2 = rootEmployee;
 
                 cleanContext.SaveChanges();
             }
