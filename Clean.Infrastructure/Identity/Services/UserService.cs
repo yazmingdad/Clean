@@ -1,4 +1,4 @@
-﻿using Clean.Core.Models;
+﻿using Clean.Core.Models.Auth;
 using Clean.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 

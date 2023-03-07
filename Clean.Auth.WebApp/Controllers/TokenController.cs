@@ -1,4 +1,4 @@
-﻿using Clean.Core.Models;
+﻿using Clean.Core.Models.Auth;
 using Clean.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +28,7 @@ namespace Clean.Auth.WebApp.Controllers
 
         [Route("/token")]
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm] CredentialsModal credentials)
+        public async Task<IActionResult> Create([FromForm] CredentialsModel credentials)
         {
 
 

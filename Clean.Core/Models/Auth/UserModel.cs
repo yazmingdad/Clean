@@ -1,4 +1,4 @@
-﻿namespace Clean.Core.Models
+﻿namespace Clean.Core.Models.Auth
 {
     public class UserModel
     {

@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="CleanDb\Services\" />
     <Folder Include="Identity\Migrations\" />
   </ItemGroup>
 

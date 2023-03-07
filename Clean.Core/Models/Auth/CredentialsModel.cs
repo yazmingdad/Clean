@@ -1,6 +1,6 @@
-﻿namespace Clean.Core.Models
+﻿namespace Clean.Core.Models.Auth
 {
-    public class CredentialsModal
+    public class CredentialsModel
     {
         public string Username { get; set; }
         public string Password { get; set; }
