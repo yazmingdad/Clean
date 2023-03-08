@@ -42,19 +42,15 @@ namespace Clean.Infrastructure.CleanDb.Services
                                 SSN = employee.SSN,
                                 Avatar = employee.Avatar,
                                 IsRetired = employee.IsRetired,
-                                ActiveCard = Mapper.Map<CoreModel.Card>(card),
                                 Department = new CoreModel.Department
                                 {
                                     Id=department.Id,
                                     Name=department.Name,
                                     ShortName= department.ShortName,                                     
                                 },
-                                Rank = Mapper.Map<CoreModel.Rank>(rank)
+                                Rank = Mapper.Map<CoreModel.Rank>(rank),
+                                ActiveCard = Mapper.Map<CoreModel.Card>(card)
                             }).ToList();
-
-
-                
-
         }
 
             return output;
