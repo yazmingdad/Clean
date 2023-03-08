@@ -55,7 +55,6 @@ namespace Clean.Infrastructure.CleanDb.Models
             modelBuilder.Entity<Card>(c => {
                 c.HasKey(p => p.Id);
                 c.Property(p => p.Number).HasColumnType("nvarchar(40)").IsRequired();
-                c.Property(p => p.IsActive);
                 c.HasOne<Employee>().WithMany().HasForeignKey(c => c.EmployeeId).IsRequired();
                 c.ToTable("Cards");
             });

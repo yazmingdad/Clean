@@ -16,5 +16,10 @@ namespace Clean.Core.Models.Company
         public string Name { get; set; }
         public string ShortName { get; set; }
         public bool IsDown { get; set; }
+        public City City { get; set; } = new City();
+        public DepartmentType DepartmentType { get; set; } = new DepartmentType();
+        public Department? Parent { get; set; } 
+        public Employee? Manager { get; set; }  
+        public List<Employee>? Employees { get; set; }
     }
 }

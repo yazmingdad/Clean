@@ -23,7 +23,6 @@ namespace Clean.Infrastructure.CleanDb.Models
         //[Required]
         //[Column(TypeName = "nvarchar(40)")]
         public string Number { get; set; }
-        public bool IsActive { get; set; }
 
     }
 }

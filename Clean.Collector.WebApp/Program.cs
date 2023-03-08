@@ -17,7 +17,12 @@ builder.Services.SetupCleanDb(configuration);
 // Identity DB for Identity data
 builder.Services.SetupIdentityDatabase(configuration);
 
+//setup Mapper
 
+builder.Services.SetupMapper(configuration);
+
+//setup Services
+builder.Services.SetupServices(configuration);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

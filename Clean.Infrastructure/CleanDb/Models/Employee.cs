@@ -48,5 +48,9 @@ namespace Clean.Infrastructure.CleanDb.Models
         public string SSN { get; set; }
         public bool IsRetired { get; set; }
         //public virtual ICollection<Card> Cards { get; set; }
+        //public Rank? Rank { get; set; }
+        //public Department? Department { get; set; }
+        //public Card? ActiveCard { get; set; }
+        //public List<Card>? Cards { get; set; }
     }
 }

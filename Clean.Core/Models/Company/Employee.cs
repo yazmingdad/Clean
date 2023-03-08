@@ -26,9 +26,9 @@ namespace Clean.Core.Models.Company
             } 
         }
 
-        public Card? ActiveCard { get; set; }
         public Rank? Rank { get; set; }
         public Department? Department { get; set; }
+        public Card? ActiveCard { get; set; }
         public List<Card>? Cards { get; set; }
 
     }

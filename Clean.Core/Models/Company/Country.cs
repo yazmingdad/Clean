@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace Clean.Core.Models.Company
 {
-    public class Card
+    public class Country
     {
         public int Id { get; set; }
-        public int EmployeeId { get; set; }
-        public string Number { get; set; }
-
+        public string Name { get; set; }
     }
 }
