@@ -13,7 +13,8 @@ builder.Services.SetupAuthentication(configuration);
 //builder.Services.SetAuthorization();
 
 
-
+// Clean DB for application data
+builder.Services.SetupCleanDb(configuration);
 
 // Identity DB for Identity data
 builder.Services.SetupIdentityDatabase(configuration);

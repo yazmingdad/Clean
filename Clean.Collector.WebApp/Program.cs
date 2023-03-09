@@ -33,6 +33,11 @@ builder.Services.SetupSwagger();
 
 var app = builder.Build();
 
+//use CORS
+app.UseCors(
+  options => options.WithOrigins("*").AllowAnyMethod().AllowAnyHeader()
+      );
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

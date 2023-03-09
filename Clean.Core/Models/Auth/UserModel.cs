@@ -11,5 +11,7 @@
 
         public bool? IsDown { get; set; }
 
+        public byte[]? Avatar { get; set; }
+
     }
 }
