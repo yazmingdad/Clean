@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Clean.Core.Models.Api;
 using Clean.Infrastructure.CleanDb.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -54,6 +55,56 @@ namespace Clean.Infrastructure.CleanDb.Services
         }
 
             return output;
+        }
+
+        public ApiResponse Insert(CoreModel.EmployeeInsert employee)
+        {
+            using var transaction = _cleanContext.Database.BeginTransaction();
+
+            try
+            {
+
+                 Employee employeeData = Mapper.Map<Employee>(employee);
+                 
+                 _cleanContext.Employees.Add(employeeData);
+                _cleanContext.SaveChanges();
+
+                if (employeeData.Id == 0)
+                {
+                    throw new Exception("Employee Insert failed");
+                }
+
+                Card cardData = new Card
+                {
+                    EmployeeId= employeeData.Id,
+                    Number = employee.CardNumber
+                };
+
+                _cleanContext.Cards.Add(cardData);
+                _cleanContext.SaveChanges();
+
+                if (cardData.Id == 0)
+                {
+                    throw new Exception("Card Insert failed");
+                }
+
+                employeeData.ActiveCardId=cardData.Id;
+                _cleanContext.Update(employeeData);
+
+
+                _cleanContext.SaveChanges();
+                // Commit transaction if all commands succeed, transaction will auto-rollback
+                // when disposed if either commands fails
+
+                transaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                // TODO: Handle failure
+                return new ApiResponse { IsFailure = true, Reason=ex.Message};
+            }
+            return new ApiResponse();
         }
     }
 }

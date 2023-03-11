@@ -32,4 +32,16 @@ namespace Clean.Core.Models.Company
         public List<Card>? Cards { get; set; }
 
     }
+
+    public class EmployeeInsert
+    {
+        public int RankId { get; set; }
+        public int DepartmentId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public byte[] Avatar { get; set; }
+        public string SSN { get; set; }
+
+        public string CardNumber { get; set; }  
+    }
 }

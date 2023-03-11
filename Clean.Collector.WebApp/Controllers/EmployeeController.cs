@@ -1,4 +1,5 @@
-﻿using Clean.Core.Models.Company;
+﻿using Clean.Core.Models.Api;
+using Clean.Core.Models.Company;
 using Clean.Infrastructure.CleanDb.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -29,6 +30,19 @@ namespace Clean.Collector.WebApp.Controllers
         public IEnumerable<Employee> Get(bool isRetired=false)
         {
             return _employeeService.getAll(isRetired);
+        }
+
+        [HttpPost] 
+        public IActionResult Insert(EmployeeInsert employee)
+        { 
+            var output = _employeeService.Insert(employee);
+
+            if(output.IsFailure)
+            {
+                return BadRequest(output);
+            }
+
+            return Ok();
         }
 
     }
