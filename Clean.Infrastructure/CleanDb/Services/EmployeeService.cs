@@ -63,6 +63,19 @@ namespace Clean.Infrastructure.CleanDb.Services
 
             try
             {
+                var existing = _cleanContext.Employees.FirstOrDefault(e=> (e.FirstName== employee.FirstName && e.LastName==employee.LastName) || e.SSN==employee.SSN);
+
+                if(existing != null)
+                {
+                    throw new Exception("Employee already exists");
+                }
+
+                var existingsCard = _cleanContext.Cards.FirstOrDefault(c => c.Number == employee.CardNumber);
+
+                if(existingsCard != null)
+                {
+                    throw new Exception("Card already exists");
+                }
 
                  Employee employeeData = Mapper.Map<Employee>(employee);
                  
@@ -90,8 +103,6 @@ namespace Clean.Infrastructure.CleanDb.Services
 
                 employeeData.ActiveCardId=cardData.Id;
                 _cleanContext.Update(employeeData);
-
-
                 _cleanContext.SaveChanges();
                 // Commit transaction if all commands succeed, transaction will auto-rollback
                 // when disposed if either commands fails

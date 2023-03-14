@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Clean.Core.Models.Company
 {
+   
     public class Department
     {
         public int Id { get; set; }
