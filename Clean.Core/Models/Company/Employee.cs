@@ -44,4 +44,5 @@ namespace Clean.Core.Models.Company
 
         public string CardNumber { get; set; }  
     }
+
 }

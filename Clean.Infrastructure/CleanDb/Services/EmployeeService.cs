@@ -20,10 +20,9 @@ namespace Clean.Infrastructure.CleanDb.Services
         {
         }
 
-        public List<CoreModel.Employee> getAll(bool isRetired = false)
+        public List<CoreModel.Employee> GetAll(bool isRetired = false)
         {
             var output = new List<CoreModel.Employee>();
-
 
             using (_cleanContext)
             {
@@ -57,7 +56,44 @@ namespace Clean.Infrastructure.CleanDb.Services
             return output;
         }
 
-        public ApiResponse Insert(CoreModel.EmployeeInsert employee)
+        public CoreModel.Employee GetById(int id)
+        {
+            return Mapper.Map<CoreModel.Employee>(_cleanContext.Employees.AsNoTracking().FirstOrDefault(x => x.Id == id)); 
+        }
+
+        public Result Update(CoreModel.Employee employee)
+        {
+            try
+            {
+                
+
+                var employeeData = Mapper.Map<Employee>(employee);
+
+                var existing = _cleanContext.Employees.FirstOrDefault(x => x.Id != employeeData.Id 
+                                                                    && (x.SSN == employeeData.SSN || 
+                                                                    (x.FirstName == employeeData.FirstName && x.LastName == employeeData.LastName)));
+
+                if(existing != null)
+                {
+                    if(existing.SSN== employeeData.SSN)
+                    {
+                        throw new Exception("SSN for another employee");
+                    }
+                    throw new Exception("Name for another employee");
+                    
+                }
+
+                _cleanContext.Employees.Attach(employeeData);
+                _cleanContext.Entry(employeeData).State = EntityState.Modified;
+                _cleanContext.SaveChanges();
+                return new Result();
+            }
+            catch(Exception ex)
+            {
+                return new Result { IsFailure = true, Reason = ex.Message };
+            }
+        }
+        public Result Insert(CoreModel.EmployeeInsert employee)
         {
             using var transaction = _cleanContext.Database.BeginTransaction();
 
@@ -113,9 +149,9 @@ namespace Clean.Infrastructure.CleanDb.Services
             {
                 transaction.Rollback();
                 // TODO: Handle failure
-                return new ApiResponse { IsFailure = true, Reason=ex.Message};
+                return new Result { IsFailure = true, Reason=ex.Message};
             }
-            return new ApiResponse();
+            return new Result();
         }
     }
 }

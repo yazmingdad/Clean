@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace Clean.Core.Models.Api
 {
-    public class Response
+    public class Result
     {
-
         public bool IsFailure { get; set; }
-
         public string Reason { get; set; } = "Some thing wrong happened";
     }
 }

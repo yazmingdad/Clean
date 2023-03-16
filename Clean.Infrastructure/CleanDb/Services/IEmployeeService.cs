@@ -5,8 +5,9 @@ namespace Clean.Infrastructure.CleanDb.Services
 {
     public interface IEmployeeService
     {
-        ApiResponse Insert(EmployeeInsert employee);
-
-        List<Employee> getAll(bool isRetired = false);
+        Employee GetById(int id);
+        Result Insert(EmployeeInsert employee);
+        Result Update(Employee employee);
+        List<Employee> GetAll(bool isRetired = false);
     }
 }

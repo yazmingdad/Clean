@@ -1,9 +1,12 @@
-﻿using Clean.Core.Models.Api;
+﻿using Castle.Core.Resource;
+using Clean.Core.Models.Api;
 using Clean.Core.Models.Company;
+using Clean.Infrastructure.CleanDb.Seed;
 using Clean.Infrastructure.CleanDb.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clean.Collector.WebApp.Controllers
@@ -29,8 +32,9 @@ namespace Clean.Collector.WebApp.Controllers
         [HttpGet]
         public IEnumerable<Employee> Get(bool isRetired=false)
         {
-            return _employeeService.getAll(isRetired);
+            return _employeeService.GetAll(isRetired);
         }
+
 
         [HttpPost] 
         public IActionResult Insert(EmployeeInsert employee)
@@ -44,6 +48,47 @@ namespace Clean.Collector.WebApp.Controllers
 
             return Ok();
         }
+
+        [HttpPatch]
+        public IActionResult Patch(int id,
+            [FromBody] JsonPatchDocument<Employee> patchDoc)
+        {
+            try
+            {
+                if (patchDoc != null)
+                {
+                    var employee = _employeeService.GetById(id);
+
+                    patchDoc.ApplyTo(employee, ModelState);
+
+                    if (!ModelState.IsValid)
+                    {
+                        throw new Exception("Invalid structure");
+                    }
+
+                    var output = _employeeService.Update(employee);
+
+                    if (output.IsFailure)
+                    {
+                        return BadRequest(output);
+                    }
+
+                    return Ok();
+                }
+
+                throw new Exception("Nothing to Patch");
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new Result { IsFailure = true, Reason = ex.Message });
+            }
+
+           
+
+
+        }
+
+       
 
     }
 }
