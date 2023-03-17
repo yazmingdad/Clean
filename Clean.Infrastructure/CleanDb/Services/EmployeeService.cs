@@ -27,6 +27,7 @@ namespace Clean.Infrastructure.CleanDb.Services
             using (_cleanContext)
             {
                 output = (from employee in _cleanContext.Set<Employee>()
+                            where employee.IsRetired==isRetired
                             join rank in _cleanContext.Set<Rank>()
                                 on employee.RankId equals rank.Id
                             join department in _cleanContext.Set<Department>()
@@ -69,7 +70,7 @@ namespace Clean.Infrastructure.CleanDb.Services
 
                 var existing = _cleanContext.Employees.FirstOrDefault(x => x.Id != employeeData.Id 
                                                                     && (x.SSN == employeeData.SSN || 
-                                                                    (x.FirstName == employeeData.FirstName && x.LastName == employeeData.LastName)));              
+                                                                    (x.FirstName.ToLower() == employeeData.FirstName.ToLower() && x.LastName.ToLower() == employeeData.LastName.ToLower())));              
 
                 if(existing != null)
                 {
