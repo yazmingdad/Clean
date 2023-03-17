@@ -9,5 +9,6 @@ namespace Clean.Infrastructure.CleanDb.Services
         Result Insert(EmployeeInsert employee);
         Result Update(Employee employee);
         List<Employee> GetAll(bool isRetired = false);
+        Result InsertCard(Card card);
     }
 }

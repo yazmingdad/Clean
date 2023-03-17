@@ -214,41 +214,62 @@ namespace Clean.Infrastructure.CleanDb.Seed
             Department rootDepartment,
             ApplicationUser user)
         {
-            //Insert the root Employee
 
-            var rootEmployee = cleanContext.Employees.FirstOrDefault(e => e.SSN == "ssn");
+            Employee output;
 
-            if (rootEmployee == null)
+            var rootUser = cleanContext.Users.FirstOrDefault(u => u.Id.Equals(new Guid(user.Id)));
+
+            if (rootUser == null)
             {
-                var buildDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var filePath = buildDir + @"\CleanDb\Seed\Data\Initial\default.png";
-                rootEmployee = new Employee
-                {
-                    RankId = rootRank.Id,
-                    DepartmentId = rootDepartment.Id,
-                    FirstName = user.UserName,
-                    LastName = user.UserName,
-                    SSN = "ssn",
-                    Avatar = File.ReadAllBytes(filePath),
-                };
+                //Insert the root Employee
 
-                cleanContext.Employees.Add(rootEmployee);
-                cleanContext.SaveChanges();
+                var rootEmployee = cleanContext.Employees.FirstOrDefault(e => e.RankId == rootRank.Id);
 
-                if (rootEmployee.Id <= 0)
+                if (rootEmployee == null)
                 {
-                    throw new Exception("Could not insert the root Employee");
+                    var buildDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    var filePath = buildDir + @"\CleanDb\Seed\Data\Initial\default.png";
+                    rootEmployee = new Employee
+                    {
+                        RankId = rootRank.Id,
+                        DepartmentId = rootDepartment.Id,
+                        FirstName = "President",
+                        LastName = "President",
+                        SSN = "ssn",
+                        Avatar = File.ReadAllBytes(filePath),
+                    };
+
+                    cleanContext.Employees.Add(rootEmployee);
+                    cleanContext.SaveChanges();
+
+                    if (rootEmployee.Id <= 0)
+                    {
+                        throw new Exception("Could not insert the root Employee");
+                    }                  
                 }
+
+                output = rootEmployee;
             }
+            else
+            {
+                var rootEmployee = cleanContext.Employees.FirstOrDefault(e => e.Id == rootUser.EmployeeId);
+
+                if (rootEmployee == null)
+                {
+                    throw new Exception("Cound not find the root employee");
+                }
+                output= rootEmployee;
+            }
+
 
             if (rootDepartment.ManagerId == 0 || rootDepartment.ManagerId == null)
             {
-                rootDepartment.ManagerId = rootEmployee.Id;
+                rootDepartment.ManagerId = output.Id;
                 cleanContext.Update(rootDepartment);
                 cleanContext.SaveChanges();
             }
 
-            return rootEmployee;
+            return output;
 
         }
 

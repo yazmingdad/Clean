@@ -65,13 +65,11 @@ namespace Clean.Infrastructure.CleanDb.Services
         {
             try
             {
-                
-
                 var employeeData = Mapper.Map<Employee>(employee);
 
                 var existing = _cleanContext.Employees.FirstOrDefault(x => x.Id != employeeData.Id 
                                                                     && (x.SSN == employeeData.SSN || 
-                                                                    (x.FirstName == employeeData.FirstName && x.LastName == employeeData.LastName)));
+                                                                    (x.FirstName == employeeData.FirstName && x.LastName == employeeData.LastName)));              
 
                 if(existing != null)
                 {
@@ -152,6 +150,31 @@ namespace Clean.Infrastructure.CleanDb.Services
                 return new Result { IsFailure = true, Reason=ex.Message};
             }
             return new Result();
+        }
+
+        public Result InsertCard(CoreModel.Card card)
+        {
+            try
+            {
+                var exists = _cleanContext.Cards.FirstOrDefault(c=>c.Number==card.Number);
+
+                if(exists != null)
+                {
+                    throw new Exception("Card already exists");
+                }
+
+                var cardData = Mapper.Map<Card>(card);
+
+                _cleanContext.Cards.Add(cardData);
+                _cleanContext.SaveChanges();
+
+                return new Result { Id = cardData.Id };
+
+
+            }catch(Exception ex)
+            {
+                return new Result { IsFailure = true,Reason=ex.Message};
+            }
         }
     }
 }

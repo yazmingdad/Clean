@@ -8,6 +8,7 @@ namespace Clean.Core.Models.Api
 {
     public class Result
     {
+        public int Id { get; set; }
         public bool IsFailure { get; set; }
         public string Reason { get; set; } = "Some thing wrong happened";
     }
