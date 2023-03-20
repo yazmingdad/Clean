@@ -32,9 +32,9 @@ namespace Clean.Infrastructure.CleanDb.Services
                                 on employee.RankId equals rank.Id
                             join department in _cleanContext.Set<Department>()
                                 on employee.DepartmentId equals department.Id
-                            join card in _cleanContext.Set<Card>()
-                                on employee.ActiveCardId equals card.Id into gj
-                                from card in gj.DefaultIfEmpty()                           
+                            join activeCard in _cleanContext.Set<Card>()
+                                on employee.ActiveCardId equals activeCard.Id into gj
+                                from activeCard in gj.DefaultIfEmpty()                           
                             select new CoreModel.Employee
                             {
                                 Id = employee.Id,
@@ -50,7 +50,8 @@ namespace Clean.Infrastructure.CleanDb.Services
                                     ShortName= department.ShortName,                                     
                                 },
                                 Rank = Mapper.Map<CoreModel.Rank>(rank),
-                                ActiveCard = Mapper.Map<CoreModel.Card>(card)
+                                ActiveCard = Mapper.Map<CoreModel.Card>(activeCard),
+                                Cards = Mapper.Map<List<CoreModel.Card>>((from card in _cleanContext.Set<Card>() where card.EmployeeId== employee.Id select card).ToList())
                             }).ToList();
         }
 
