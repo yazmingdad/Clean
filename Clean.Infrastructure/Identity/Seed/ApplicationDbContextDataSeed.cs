@@ -10,6 +10,7 @@ namespace Clean.Infrastructure.Identity.Seed
         {
             // Add roles supported
             await roleManager.CreateAsync(new IdentityRole(ApplicationIdentityConstants.Roles.Administrator));
+            await roleManager.CreateAsync(new IdentityRole(ApplicationIdentityConstants.Roles.Config));
             await roleManager.CreateAsync(new IdentityRole(ApplicationIdentityConstants.Roles.Member));
 
             // New admin user
@@ -27,6 +28,8 @@ namespace Clean.Infrastructure.Identity.Seed
             await userManager.CreateAsync(adminUser, ApplicationIdentityConstants.DefaultPassword);
             adminUser = await userManager.FindByNameAsync(adminUserName);
             await userManager.AddToRoleAsync(adminUser, ApplicationIdentityConstants.Roles.Administrator);
+            await userManager.AddToRoleAsync(adminUser, ApplicationIdentityConstants.Roles.Config);
+            await userManager.AddToRoleAsync(adminUser, ApplicationIdentityConstants.Roles.Member);
         }
     }
 }

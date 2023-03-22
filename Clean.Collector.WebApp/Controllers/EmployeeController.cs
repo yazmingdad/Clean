@@ -36,7 +36,8 @@ namespace Clean.Collector.WebApp.Controllers
         }
 
 
-        [HttpPost] 
+        [HttpPost]
+        [Authorize(Roles = "Config")]
         public IActionResult Insert(EmployeeInsert employee)
         { 
             var output = _employeeService.Insert(employee);
@@ -49,6 +50,7 @@ namespace Clean.Collector.WebApp.Controllers
             return Ok();
         }
 
+        [Authorize(Roles = "Config")]
         [HttpPatch("{id}")]
         public IActionResult Patch(int id,
             [FromBody] JsonPatchDocument<Employee> patchDoc)
@@ -72,6 +74,8 @@ namespace Clean.Collector.WebApp.Controllers
                     {
                         return BadRequest(output);
                     }
+
+                    _logger.LogInformation("Employee Patch");
 
                     return Ok();
                 }
