@@ -27,5 +27,26 @@ namespace Clean.Collector.WebApp.Controllers
         {
            return _departmentService.getAll();
         }
+
+        [HttpGet]
+        [Route("Central")]
+        public IEnumerable<Department> GetCentral()
+        {
+            return _departmentService.getByType("Central");
+        }
+
+        [HttpGet]
+        [Route("Regional")]
+        public IEnumerable<Department> GetRegional()
+        {
+            return _departmentService.getByType("Regional");
+        }
+
+        [HttpGet]
+        [Route("Provincial")]
+        public IEnumerable<Department> GetProvincial()
+        {
+            return _departmentService.getByType("Provincial");
+        }
     }
 }
