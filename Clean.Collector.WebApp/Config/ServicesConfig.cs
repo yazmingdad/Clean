@@ -10,6 +10,7 @@ namespace Clean.Collector.WebApp.Config
             services.AddTransient<IRankService, RankService>();
             services.AddTransient<IDepartmentService, DepartmentService>();
             services.AddTransient<IEmployeeService, EmployeeService>();
+            services.AddTransient<ILocalizationService, LocalizationService>();
         }
     }
 }

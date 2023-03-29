@@ -19,7 +19,17 @@ namespace Clean.Infrastructure.CleanDb.Services
         public EmployeeService(IMapper mapper,CleanContext cleanContext) : base(mapper,cleanContext)
         {
         }
-
+        public List<CoreModel.Employee> GetAllLight(bool isRetired = false)
+        {
+            return (from employee in _cleanContext.Set<Employee>()
+                    where employee.IsRetired == isRetired
+                    select new CoreModel.Employee
+                    {
+                        Id = employee.Id,
+                        FirstName = employee.FirstName,
+                        LastName = employee.LastName,          
+                    }).ToList();
+        }
         public List<CoreModel.Employee> GetAll(bool isRetired = false)
         {
             var output = new List<CoreModel.Employee>();

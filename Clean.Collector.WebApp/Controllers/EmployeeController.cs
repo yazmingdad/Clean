@@ -35,6 +35,22 @@ namespace Clean.Collector.WebApp.Controllers
             return _employeeService.GetAll(isRetired);
         }
 
+        [HttpGet]
+        [Route("Light")]
+        public ActionResult<Employee> GetLight(bool isRetired = false)
+        {
+
+            try
+            {
+                return Ok(_employeeService.GetAllLight(isRetired));
+            }
+            catch
+            {
+                return BadRequest();
+            }
+          
+        }
+
 
         [HttpPost]
         [Authorize(Roles = "Config")]

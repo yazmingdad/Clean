@@ -23,4 +23,5 @@ namespace Clean.Core.Models.Company
         public Employee? Manager { get; set; }  
         public List<Employee>? Employees { get; set; }
     }
+
 }

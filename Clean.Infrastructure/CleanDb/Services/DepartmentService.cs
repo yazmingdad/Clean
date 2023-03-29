@@ -23,6 +23,11 @@ namespace Clean.Infrastructure.CleanDb.Services
             //}
         }
 
+        public List<CoreModel.DepartmentType> getAllType()
+        {
+           return (from departmentType in _cleanContext.Set<DepartmentType>() select Mapper.Map<CoreModel.DepartmentType>(departmentType)).ToList();
+        }
+
         public List<CoreModel.Department> getByType(string type)
         {
             var departmentType = _cleanContext.DepartmentTypes.FirstOrDefault(t => t.Name == type);

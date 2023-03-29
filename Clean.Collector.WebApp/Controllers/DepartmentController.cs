@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace Clean.Collector.WebApp.Controllers
 {
     [Route("api/[controller]")]
@@ -28,25 +29,77 @@ namespace Clean.Collector.WebApp.Controllers
            return _departmentService.getAll();
         }
 
+
+        [HttpGet]
+        [Route("Types")]
+        public ActionResult<DepartmentType> GetTypes()
+        {
+            try
+            {
+                return Ok(_departmentService.getAllType());
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
+
         [HttpGet]
         [Route("Central")]
-        public IEnumerable<Department> GetCentral()
+        public ActionResult<Department> GetCentral()
         {
-            return _departmentService.getByType("Central");
+            try
+            {
+                return Ok(_departmentService.getByType("Central"));
+            }
+            catch
+            {
+                return BadRequest();
+            }
+           
         }
 
         [HttpGet]
         [Route("Regional")]
-        public IEnumerable<Department> GetRegional()
+        public ActionResult<Department> GetRegional()
         {
-            return _departmentService.getByType("Regional");
+            try
+            {
+                return Ok(_departmentService.getByType("Regional"));
+            }
+            catch
+            {
+                return BadRequest(new List<Department>());
+            }
         }
 
         [HttpGet]
         [Route("Provincial")]
-        public IEnumerable<Department> GetProvincial()
+        public ActionResult<Department> GetProvincial()
         {
-            return _departmentService.getByType("Provincial");
+            try
+            {
+                return Ok(_departmentService.getByType("Provincial"));
+            }
+            catch
+            {
+                return BadRequest(new List<Department>());
+            }
         }
+
+        //[HttpPost]
+        //[Authorize(Roles = "Config")]
+        //public IActionResult Insert(Department department)
+        //{
+        //    var output = _departmentService.Insert(department);
+
+        //    if (output.IsFailure)
+        //    {
+        //        return BadRequest(output);
+        //    }
+
+        //    return Ok();
+        //}
     }
 }
