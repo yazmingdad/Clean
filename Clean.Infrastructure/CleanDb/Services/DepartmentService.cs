@@ -1,6 +1,8 @@
 ﻿
 using AutoMapper;
+using Clean.Core.Models.Api;
 using Clean.Infrastructure.CleanDb.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +17,13 @@ namespace Clean.Infrastructure.CleanDb.Services
         public DepartmentService(IMapper mapper, CleanContext cleanContext) : base(mapper, cleanContext)
         {
         }
+        public CoreModel.Department GetById(int id)
+        {
+            return Mapper.Map<CoreModel.Department>(_cleanContext.Departments.AsNoTracking().FirstOrDefault(x => x.Id == id));
+        }
         public List<CoreModel.Department> getAll()
         {
-            //using (_cleanContext)
-            //{
-                return (from department in _cleanContext.Set<Department>() select Mapper.Map<CoreModel.Department>(department)).ToList();
-            //}
+           return (from department in _cleanContext.Set<Department>() select Mapper.Map<CoreModel.Department>(department)).ToList();
         }
 
         public List<CoreModel.DepartmentType> getAllType()
@@ -28,17 +31,13 @@ namespace Clean.Infrastructure.CleanDb.Services
            return (from departmentType in _cleanContext.Set<DepartmentType>() select Mapper.Map<CoreModel.DepartmentType>(departmentType)).ToList();
         }
 
-        public List<CoreModel.Department> getByType(string type)
+        public List<CoreModel.Department> getByIsDown(bool isDown)
         {
-            var departmentType = _cleanContext.DepartmentTypes.FirstOrDefault(t => t.Name == type);
 
-            if(departmentType == null) 
-            {
-                throw new Exception("Unknown Error");
-            }
-
-            return (from department in _cleanContext.Set<Department>()
-                    where department.DepartmentTypeId==departmentType.Id && !department.IsDown
+         var result = (from department in _cleanContext.Set<Department>()
+                    where department.IsDown == isDown
+                    join departmentType in _cleanContext.Set<DepartmentType>()
+                    on department.DepartmentTypeId equals departmentType.Id
                     join city in _cleanContext.Set<City>()
                     on department.CityId equals city.Id
                     join employee in _cleanContext.Set<Employee>()
@@ -83,6 +82,16 @@ namespace Clean.Infrastructure.CleanDb.Services
 
                     }).ToList();
 
+            var types = _cleanContext.DepartmentTypes.ToList();
+
+            List<CoreModel.Department> output = new List<CoreModel.Department>();
+
+            foreach (var type in types)
+            {
+                output.AddRange(result.Where(r => r.DepartmentTypeId == type.Id));
+            }
+
+            return output;
 
         }
 
@@ -90,6 +99,62 @@ namespace Clean.Infrastructure.CleanDb.Services
         public List<CoreModel.Department> getDown()
         {
             throw new NotImplementedException();
+        }
+
+        public Result Insert(CoreModel.DepartmentInsert department)
+        {
+            try
+            {
+                var existing = _cleanContext.Departments.FirstOrDefault(d => d.Name == department.Name || d.ShortName == department.ShortName);
+
+                if (existing != null)
+                {
+                    throw new Exception("Department already exists");
+                }
+
+                Department departmentData = Mapper.Map<Department>(department);
+
+                _cleanContext.Departments.Add(departmentData);
+                _cleanContext.SaveChanges();
+
+            }
+            catch(Exception ex)
+            {
+                return new Result { IsFailure = true, Reason = ex.Message };
+            }
+
+
+            return new Result();
+
+        }
+
+        public Result Update(CoreModel.Department department)
+        {
+            try
+            {
+                var departmentData = Mapper.Map<Department>(department);
+
+                var existing = _cleanContext.Departments.FirstOrDefault(x => x.Id != departmentData.Id && (x.Name.ToLower() == departmentData.Name.ToLower() || x.ShortName.ToLower() == departmentData.ShortName.ToLower()));
+
+                if (existing != null)
+                {
+                    if (existing.Name== departmentData.Name)
+                    {
+                        throw new Exception("Name for another department");
+                    }
+                    throw new Exception("ShortName for another employee");
+
+                }
+
+                _cleanContext.Departments.Attach(departmentData);
+                _cleanContext.Entry(departmentData).State = EntityState.Modified;
+                _cleanContext.SaveChanges();
+                return new Result();
+            }
+            catch (Exception ex)
+            {
+                return new Result { IsFailure = true, Reason = ex.Message };
+            }
         }
     }
 }

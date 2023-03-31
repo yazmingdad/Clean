@@ -25,6 +25,7 @@ namespace Clean.Infrastructure.Profile
 
             this.CreateMap<DataModel.Department, CoreModel.Company.Department>();
             this.CreateMap<CoreModel.Company.Department, DataModel.Department>();
+            this.CreateMap<CoreModel.Company.DepartmentInsert, DataModel.Department>();
 
             this.CreateMap<DataModel.DepartmentType, CoreModel.Company.DepartmentType>();
             this.CreateMap<CoreModel.Company.DepartmentType, DataModel.DepartmentType>();

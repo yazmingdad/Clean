@@ -1,8 +1,10 @@
-﻿using Clean.Core.Models.Company;
+﻿using Clean.Core.Models.Api;
+using Clean.Core.Models.Company;
 using Clean.Infrastructure.CleanDb.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -46,12 +48,12 @@ namespace Clean.Collector.WebApp.Controllers
 
 
         [HttpGet]
-        [Route("Central")]
-        public ActionResult<Department> GetCentral()
+        [Route("up")]
+        public ActionResult<Department> GetUp()
         {
             try
             {
-                return Ok(_departmentService.getByType("Central"));
+                return Ok(_departmentService.getByIsDown(false));
             }
             catch
             {
@@ -61,12 +63,12 @@ namespace Clean.Collector.WebApp.Controllers
         }
 
         [HttpGet]
-        [Route("Regional")]
-        public ActionResult<Department> GetRegional()
+        [Route("down")]
+        public ActionResult<Department> GetDown()
         {
             try
             {
-                return Ok(_departmentService.getByType("Regional"));
+                return Ok(_departmentService.getByIsDown(true));
             }
             catch
             {
@@ -74,32 +76,58 @@ namespace Clean.Collector.WebApp.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("Provincial")]
-        public ActionResult<Department> GetProvincial()
+
+        [HttpPost]
+        [Authorize(Roles = "Config")]
+        public IActionResult Insert(DepartmentInsert department)
+        {
+            var output = _departmentService.Insert(department);
+
+            if (output.IsFailure)
+            {
+                return BadRequest(output);
+            }
+
+            return Ok();
+        }
+
+        [Authorize(Roles = "Config")]
+        [HttpPatch("{id}")]
+        public IActionResult Patch(int id,
+          [FromBody] JsonPatchDocument<Department> patchDoc)
         {
             try
             {
-                return Ok(_departmentService.getByType("Provincial"));
+                if (patchDoc != null)
+                {
+                    var department = _departmentService.GetById(id);
+
+                    patchDoc.ApplyTo(department, ModelState);
+
+                    if (!ModelState.IsValid)
+                    {
+                        throw new Exception("Invalid structure");
+                    }
+
+                    var output = _departmentService.Update(department);
+
+                    if (output.IsFailure)
+                    {
+                        return BadRequest(output);
+                    }
+
+                    _logger.LogInformation("Departement Patch");
+
+                    return Ok();
+                }
+
+                throw new Exception("Nothing to Patch");
             }
-            catch
+            catch (Exception ex)
             {
-                return BadRequest(new List<Department>());
+                return BadRequest(new Result { IsFailure = true, Reason = ex.Message });
             }
+
         }
-
-        //[HttpPost]
-        //[Authorize(Roles = "Config")]
-        //public IActionResult Insert(Department department)
-        //{
-        //    var output = _departmentService.Insert(department);
-
-        //    if (output.IsFailure)
-        //    {
-        //        return BadRequest(output);
-        //    }
-
-        //    return Ok();
-        //}
     }
 }
