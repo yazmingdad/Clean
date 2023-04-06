@@ -1,5 +1,4 @@
-﻿using Clean.Email;
-using Clean.Email.MailKit;
+﻿
 using Clean.Infrastructure.CleanDb.Models;
 using Microsoft.EntityFrameworkCore;
 

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Clean.Email
+namespace Clean.Infrastructure.Email
 {
-    public class EmailMessage
+    internal class EmailMessage
     {
         //
         // Summary:

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="MailKit" Version="3.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.12" />
@@ -27,7 +28,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Clean.Core\Clean.Core.csproj" />
-    <ProjectReference Include="..\Clean.Email\Clean.Email.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Clean.Email
+namespace Clean.Infrastructure.Email
 {
-    public interface IMailService
+    internal interface IMailService
     {
         Task SendEmailAsync(EmailMessage message);
     }

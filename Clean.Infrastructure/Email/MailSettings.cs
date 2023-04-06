@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Clean.Email
+namespace Clean.Infrastructure.Email
 {
-    public class MailSettings
+    internal class MailSettings
     {
         public string Mail { get; set; }
         public string DisplayName { get; set; }

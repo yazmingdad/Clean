@@ -9,9 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Clean.Email.MailKit
+namespace Clean.Infrastructure.Email.MailKit
 {
-    public class MailKitService : IMailService
+    internal class MailKitService:IMailService
     {
         readonly ConcurrentQueue<SmtpClient> _clients = new ConcurrentQueue<SmtpClient>();
 

@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Clean.Auth.WebApp", "Clean.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Clean.Collector.WebApp", "Clean.Collector.WebApp\Clean.Collector.WebApp.csproj", "{35590623-89D2-48C5-A634-D0402E73E0F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clean.Email", "Clean.Email\Clean.Email.csproj", "{FE619140-8F81-4CDD-B734-236FE37D5E01}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +33,6 @@ Global
 		{35590623-89D2-48C5-A634-D0402E73E0F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35590623-89D2-48C5-A634-D0402E73E0F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35590623-89D2-48C5-A634-D0402E73E0F7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FE619140-8F81-4CDD-B734-236FE37D5E01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FE619140-8F81-4CDD-B734-236FE37D5E01}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FE619140-8F81-4CDD-B734-236FE37D5E01}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FE619140-8F81-4CDD-B734-236FE37D5E01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
