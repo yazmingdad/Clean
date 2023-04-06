@@ -1,8 +1,11 @@
 ﻿using Clean.Core.Models.Auth;
+using Clean.Core.Models.Company;
+using Clean.Infrastructure.CleanDb.Models;
 using Clean.Infrastructure.Identity.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Clean.Auth.WebApp.Controllers
@@ -27,5 +30,44 @@ namespace Clean.Auth.WebApp.Controllers
 
             return await _userService.GetByIdAsync(userId);
         }
+
+        [HttpGet]
+        [Authorize(Roles = "Administrator")]
+        [Route("up")]
+        public IActionResult GetAllUsers()
+        {
+            try
+            {
+                return Ok(_userService.GetUsers());
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Administrator")]
+        [Route("roles")]
+        public IActionResult GetRoles()
+        {
+
+            try
+            {
+                return Ok(_userService.GetRoles());
+            }
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
+
+        }
+
+        //[HttpPost]
+        //[Authorize(Roles = "Administrator")]
+        //public IActionResult Insert(UserInsertModel userModel)
+        //{
+        //    var output = _userService.Insert(userModel);
+        //}
     }
 }

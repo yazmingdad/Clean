@@ -24,6 +24,7 @@ builder.Services.SetupIdentityDatabase(configuration);
 builder.Services.SetupServices(configuration);
 
 
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
