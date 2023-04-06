@@ -23,7 +23,8 @@ builder.Services.SetupIdentityDatabase(configuration);
 //setup Services
 builder.Services.SetupServices(configuration);
 
-
+//setup Email
+builder.Services.SetupEmail(configuration);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
