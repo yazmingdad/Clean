@@ -8,8 +8,7 @@ namespace Clean.Core.Models.Auth
 {
    public class UserInsertModel
     {
-        public string Id { get; set; }
         public int EmployeeId { get; set; }    
-        public string RoleId { get; set; }
+        public string RoleName { get; set; }
     }
 }

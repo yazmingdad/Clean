@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Clean.Infrastructure.Email
 {
-    internal class EmailMessage
+    public class EmailMessage
     {
         //
         // Summary:

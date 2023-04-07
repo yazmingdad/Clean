@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Clean.Infrastructure.Email
 {
-    internal interface IMailService
+    public interface IMailService
     {
         Task SendEmailAsync(EmailMessage message);
     }

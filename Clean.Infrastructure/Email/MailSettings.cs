@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Clean.Infrastructure.Email
 {
-    internal class MailSettings
+    public class MailSettings
     {
         public string Mail { get; set; }
         public string DisplayName { get; set; }

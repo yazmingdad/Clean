@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Clean.Infrastructure.Email.MailKit
 {
-    internal class MailKitService:IMailService
+    public class MailKitService:IMailService
     {
         readonly ConcurrentQueue<SmtpClient> _clients = new ConcurrentQueue<SmtpClient>();
 
@@ -36,7 +36,7 @@ namespace Clean.Infrastructure.Email.MailKit
                 using var smtp = new SmtpClient();
                 smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
                 smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
-                await smtp.SendAsync(email);
+                var test =await smtp.SendAsync(email);
                 smtp.Disconnect(true);
             }
             catch

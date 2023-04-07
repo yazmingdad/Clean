@@ -1,5 +1,7 @@
 ﻿
 using Clean.Infrastructure.CleanDb.Models;
+using Clean.Infrastructure.Email;
+using Clean.Infrastructure.Email.MailKit;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clean.Auth.WebApp.Config

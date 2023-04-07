@@ -1,11 +1,18 @@
 ﻿using Clean.Core.Models.Api;
 using Clean.Core.Models.Auth;
-using Clean.Email;
 using Clean.Infrastructure.CleanDb.Models;
+using Clean.Infrastructure.Email;
 using Clean.Infrastructure.Identity.Models;
+using Clean.Infrastructure.Utils;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Options;
+using System.Data;
+using System.Reflection.Metadata;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using System.Xml.Linq;
 
 namespace Clean.Infrastructure.Identity.Services
 {
@@ -14,12 +21,17 @@ namespace Clean.Infrastructure.Identity.Services
         private readonly ApplicationDbContext _context;
         private readonly CleanContext _cleanContext;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IMailService _mailService;
 
-        public UserService(IMailService mailService, ApplicationDbContext context, CleanContext cleanContext, UserManager<ApplicationUser> userManager)
+
+
+        public UserService( IMailService mailService, ApplicationDbContext context, CleanContext cleanContext, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _cleanContext = cleanContext;
             _userManager = userManager;
+            _mailService= mailService;
+
         }
 
         public async Task<UserModel> GetByIdAsync(string userId)
@@ -146,52 +158,314 @@ namespace Clean.Infrastructure.Identity.Services
             return output;
         }
 
-        public Result Insert(UserInsertModel userModel)
+        public async Task<Result> InsertAsync(UserInsertModel userModel)
         {
-            using (_cleanContext)
+            try
             {
-                using (var transaction = _cleanContext.Database.BeginTransaction())
+                EmailMessage message = new();
+
+                var employee = _cleanContext.Employees.FirstOrDefault(e => e.Id == userModel.EmployeeId);
+
+                if (employee == null)
                 {
-                    try
+                    throw new Exception("Couldn't Find Employee");
+                }
+
+                var role = _context.Roles.FirstOrDefault(r => r.Name == userModel.RoleName);
+
+                if(role == null)
+                {
+                    throw new Exception("Role Not Found");
+                }
+
+                var guid = Guid.NewGuid();
+
+                var user = _context.Users.FirstOrDefault(u => u.Id.ToLower()==guid.ToString().ToLower());
+
+                if( user != null)
+                {
+                    throw new Exception("User already exists");
+                }
+
+                var username = $"{employee.FirstName.Substring(0, 1)}.{employee.LastName.Replace(" ", String.Empty)}".ToLower();
+
+                user = await _userManager.FindByNameAsync(username);
+
+                if(user == null)
+                {
+                    user = new ApplicationUser
                     {
-                        // your transactional code
-                        var employee = _cleanContext.Employees.FirstOrDefault(e => e.Id == userModel.EmployeeId);
+                        UserName = username,
+                        Email = "ygabdelo@gmail.com",
+                        NormalizedUserName = username.ToUpper(),
+                        NormalizedEmail= "ygabdelo@gmail.com".ToUpper(),
+                    };
 
-                        if (employee == null)
+                    PasswordGenerator generator = new PasswordGenerator();
+                    string password = generator.Generate();
+
+                    message = EmailBuilder.NewUserAssigned(employee, username, password);
+
+                    var hashedPassword = _userManager.PasswordHasher.HashPassword(user, password);
+
+                    user.Id = guid.ToString().ToLower();
+                    user.ConcurrencyStamp = Guid.NewGuid().ToString();
+                    user.SecurityStamp = Guid.NewGuid().ToString("D").ToUpper();
+                    user.PasswordHash = hashedPassword;
+
+                    object[] paramItems = new object[]
                         {
-                            throw new Exception("Couldn't Find Employee");
-                        }      
+                                            new SqlParameter("@uid", user.Id),
 
-                        using (_context)
-                        {
-                            _context.Database.UseTransaction(transaction.GetDbTransaction());
+                                            new SqlParameter("@un", user.UserName),
+                                            new SqlParameter("@nun", user.NormalizedUserName),
 
-                            // your transactional code
+                                            new SqlParameter("@em", user.Email),
+                                            new SqlParameter("@nem", user.NormalizedEmail),
 
-                            ApplicationUser user = new ApplicationUser
-                            {
-                                UserName= $"{employee.FirstName.Substring(0, 1)}.{employee.LastName.Replace(" ", String.Empty)}".ToLower(),
-                                Email= "ygabdelo@gmail.com",
-                                IsDown = false,
-                                IsFirstLogin= true,
-                                
-                            };
-                            _context.SaveChanges();
-                        }
-                       
-                        _cleanContext.SaveChanges();
-                        // Commit transaction if all commands succeed, transaction will auto-rollback when disposed if either commands fails
-                        transaction.Commit();
-                    }
-                    catch (Exception)
+                                            new SqlParameter("@ph", user.PasswordHash),
+                                            new SqlParameter("@cs", user.ConcurrencyStamp),
+                                            new SqlParameter("@ss", user.SecurityStamp),
+
+                                            new SqlParameter("@roleId", role.Id),
+
+
+                                            new SqlParameter("@cleanUserId", guid.ToString().ToUpper()),
+                                            new SqlParameter("@employeeId", employee.Id)
+                        };
+
+
+                    _context.Database.ExecuteSqlRaw(@$"BEGIN TRANSACTION 
+                                                             BEGIN TRY  
+                                                              INSERT INTO CleanIdentity.dbo.AspNetUsers(Id,IsDown,IsFirstLogin,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnabled,AccessFailedCount)
+                                                              VALUES(@uid,0,1,@un,@nun,@em,@nem,1,@ph,@ss,@cs,0,0,1,0);
+
+		                                                      INSERT INTO CleanIdentity.dbo.AspNetUserRoles(UserId,RoleId)
+		                                                      VALUES(@uid,@roleId)
+
+                                                              INSERT INTO Clean.dbo.Users 
+                                                              VALUES(@cleanUserId,@employeeId);
+                                                              COMMIT;
+                                                        
+                                                             END TRY  
+                                                             BEGIN CATCH  
+                                                              ROLLBACK; 
+                                                              THROW; 
+                                                             END CATCH;   
+                                                  ", paramItems);
+
+                }
+                else
+                {
+                    if (user.IsDown)
                     {
-                        transaction.Rollback();
-                        // handle exception
+                        // Activate the user
+                        user.IsDown = false;
+
+                        //Add role to the User 
+                        await _userManager.AddToRoleAsync(user, userModel.RoleName);
+
+                        //Configure the Email 
+                        message = EmailBuilder.EnabledUser(employee, username);
+
                     }
                 }
 
-                return new Result();
+
+
+
+                message.Destination = user.Email;
+                await _mailService.SendEmailAsync(message);
+
             }
+            catch(Exception ex)
+            {
+
+            }
+
+
+
+
+
+            //    EmailMessage message = new();
+
+            //    var username = $"{employee.FirstName.Substring(0, 1)}.{employee.LastName.Replace(" ", String.Empty)}".ToLower();
+
+            //    //Check if the user exists
+            //    var user = await _userManager.FindByNameAsync(username);
+
+            //    if (user == null)
+            //    {
+
+            //        // Create the user in the AspNetUser Table
+            //        var result = await _userManager.CreateAsync(user, password);
+
+            //        if (!result.Succeeded)
+            //        {
+            //            throw new Exception("Couldn't create user");
+            //        }
+
+            //        user = null;
+            //        //Find the user
+            //        user = await _userManager.FindByNameAsync(username);
+
+            //        if (user == null)
+            //        {
+            //            throw new Exception("Something wrong happened");
+            //        }
+
+            //        message = EmailBuilder.NewUserAssigned(employee, username, password);
+            //        message.Destination = user.Email;
+
+            //        //Add role to the user 
+            //        await _userManager.AddToRoleAsync(user, userModel.RoleName);
+
+            //        User cleanUser = new User
+            //        {
+            //            Id = new Guid(user.Id),
+            //            EmployeeId = userModel.EmployeeId
+            //        };
+
+            //        _cleanContext.Add(cleanUser);
+            //        _cleanContext.SaveChanges();
+
+                        
+            //    }
+            //    else
+            //    {
+            //        if (user.IsDown)
+            //        {
+            //            // Activate the user
+            //            user.IsDown = false;
+
+            //            //Add role to the User 
+            //            await _userManager.AddToRoleAsync(user, userModel.RoleName);
+
+            //            //Configure the Email 
+            //            message = EmailBuilder.EnabledUser(employee, username);
+
+            //        }
+
+            //    }
+
+
+
+
+
+
+            //    transaction.Commit();
+            //}catch(Exception ex)
+            //{
+            //    transaction.Rollback();
+            //}
+
+            //    using var transaction = _cleanContext.Database.BeginTransaction();
+
+            //    try
+            //    {
+            //        EmailMessage message=new();
+            //        // your transactional code
+            //        var employee = _cleanContext.Employees.FirstOrDefault(e => e.Id == userModel.EmployeeId);
+
+            //        if (employee == null)
+            //        {
+            //            throw new Exception("Couldn't Find Employee");
+            //        }      
+
+            //        _context.Database.UseTransaction(transaction.GetDbTransaction());
+
+            //        // your transactional code
+            //        var username = $"{employee.FirstName.Substring(0, 1)}.{employee.LastName.Replace(" ", String.Empty)}".ToLower();
+
+            //        //Check if the user exists
+            //        var user = await _userManager.FindByNameAsync(username);
+
+            //        if (user == null)
+            //        {
+            //            user = new ApplicationUser
+            //            {
+            //                UserName = username,
+            //                Email = "ygabdelo@gmail.com",
+            //                IsDown = false,
+            //                IsFirstLogin = true,
+
+            //            };
+
+            //            PasswordGenerator generator = new PasswordGenerator();
+            //            string password = generator.Generate();
+
+            //            // Create the user in the AspNetUser Table
+            //var result = await _userManager.CreateAsync(user, password);
+
+            //if (!result.Succeeded)
+            //{
+            //    throw new Exception("Couldn't create user");
+            //}
+
+            //            user = null;
+            //            //Find the user
+            //            user = await _userManager.FindByNameAsync(username);
+
+            //            if (user == null)
+            //            {
+            //                throw new Exception("Something wrong happened");
+            //            }
+
+            //            message = EmailBuilder.NewUserAssigned(employee, username, password);
+            //            message.Destination = user.Email;
+
+            //            //Add role to the user 
+            //            await _userManager.AddToRoleAsync(user, userModel.RoleName);
+
+            //            User cleanUser = new User
+            //            {
+            //                Id = new Guid(user.Id),
+            //                EmployeeId = userModel.EmployeeId
+            //            };
+
+            //            _cleanContext.Add(cleanUser);
+            //        }
+            //        else
+            //        {
+            //            if (user.IsDown)
+            //            {
+            //                // Activate the user
+            //                user.IsDown = false;
+
+            //                //Add role to the User 
+            //                await _userManager.AddToRoleAsync(user, userModel.RoleName);
+
+            //                //Configure the Email 
+            //                message = EmailBuilder.EnabledUser(employee, username);
+
+            //            }
+            //        }
+
+
+            //        _context.SaveChanges();
+
+
+            //        _cleanContext.SaveChanges();
+
+
+            //        await _mailService.SendEmailAsync(message);
+
+            //        // Commit transaction if all commands succeed, transaction will auto-rollback when disposed if either commands fails
+            //        transaction.Commit();
+
+            //}
+            //    catch (Exception ex)
+            //    {
+            //        transaction.Rollback();
+            //       // handle exception
+            //       return new Result { IsFailure=true,Reason=ex.Message };
+            //    }
+
+            return new Result();
+
         }
+        
+
+
     }
 }

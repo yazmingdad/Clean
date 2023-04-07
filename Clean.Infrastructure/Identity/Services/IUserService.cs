@@ -10,6 +10,6 @@ namespace Clean.Infrastructure.Identity.Services
         List<ApplicationUserModel> GetUsers();
         List<RoleModel> GetRoles();
 
-        Result Insert(UserInsertModel userModel);
+        Task<Result> InsertAsync(UserInsertModel userModel);
     }
 }

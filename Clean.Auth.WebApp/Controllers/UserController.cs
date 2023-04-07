@@ -63,11 +63,18 @@ namespace Clean.Auth.WebApp.Controllers
 
         }
 
-        //[HttpPost]
-        //[Authorize(Roles = "Administrator")]
-        //public IActionResult Insert(UserInsertModel userModel)
-        //{
-        //    var output = _userService.Insert(userModel);
-        //}
+        [HttpPost]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> InsertAsync(UserInsertModel userModel)
+        {
+            var output = await _userService.InsertAsync(userModel);
+
+            if (output.IsFailure)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
     }
 }
