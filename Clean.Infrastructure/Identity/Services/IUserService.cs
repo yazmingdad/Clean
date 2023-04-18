@@ -11,5 +11,11 @@ namespace Clean.Infrastructure.Identity.Services
         List<RoleModel> GetRoles();
 
         Task<Result> InsertAsync(UserInsertModel userModel);
+
+        Task<Result> AddRoleAsync(string byUserId,UserRoleModel userModel);
+
+        Task<Result> RemoveRoleAsync(string byUserId, UserRoleModel userModel);
+
+        Result DisableUser(string byUserId, string userId);
     }
 }

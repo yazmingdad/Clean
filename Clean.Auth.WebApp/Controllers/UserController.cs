@@ -76,5 +76,57 @@ namespace Clean.Auth.WebApp.Controllers
 
             return Ok();
         }
+
+        [HttpPost]
+        [Authorize(Roles = "Administrator")]
+        [Route("addrole")]
+        public async Task<IActionResult> AddRoleAsync(UserRoleModel userModel)
+        {
+            string byUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var output = await _userService.AddRoleAsync(byUserId, userModel);
+
+            if (output.IsFailure)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Administrator")]
+        [Route("removerole")]
+        public async Task<IActionResult> RemoveRoleAsync(UserRoleModel userModel)
+        {
+            string byUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var output = await _userService.RemoveRoleAsync(byUserId, userModel);
+
+            if (output.IsFailure)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Administrator")]
+        [Route("disableuser")]
+
+        public IActionResult DisableUserAsync(UserIdModel userId)
+        {
+            string byUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var output = _userService.DisableUser(byUserId, userId.UserId);
+
+            if (output.IsFailure)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
     }
 }

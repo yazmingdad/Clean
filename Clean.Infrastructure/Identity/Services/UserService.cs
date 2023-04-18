@@ -13,6 +13,7 @@ using System.Data;
 using System.Reflection.Metadata;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using System.Xml.Linq;
+using System.Security.Claims;
 
 namespace Clean.Infrastructure.Identity.Services
 {
@@ -32,6 +33,56 @@ namespace Clean.Infrastructure.Identity.Services
             _userManager = userManager;
             _mailService= mailService;
 
+        }
+
+        public async Task<Result> AddRoleAsync(string byUserId,UserRoleModel pairing)
+        {
+            try
+            {
+                var user = _context.Users.FirstOrDefault(u => u.Id == pairing.UserId);
+
+              
+                if (user == null || (byUserId == user.Id))
+                {
+                    throw new Exception("User Not Found");
+                }
+
+                await _userManager.AddToRoleAsync(user, pairing.RoleName);
+
+                _context.SaveChanges();
+
+            }
+            catch(Exception ex)
+            {
+                return new Result { IsFailure= true };
+            }
+
+            return new Result();
+        }
+
+        public Result DisableUser(string byUserId, string userId)
+        {
+            try
+            {
+                var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+
+                if (user == null || (byUserId == user.Id) || user.UserName.ToLower()=="cleaner")
+                {
+                    throw new Exception("User Not Found");
+                }
+
+                user.IsDown = true;
+
+                _context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                return new Result { IsFailure = true };
+            }
+
+            return new Result();
         }
 
         public async Task<UserModel> GetByIdAsync(string userId)
@@ -276,196 +327,42 @@ namespace Clean.Infrastructure.Identity.Services
 
                 message.Destination = user.Email;
                 await _mailService.SendEmailAsync(message);
+                return new Result();
 
             }
             catch(Exception ex)
             {
-
+                return new Result { IsFailure= true };
             }
 
-
-
-
-
-            //    EmailMessage message = new();
-
-            //    var username = $"{employee.FirstName.Substring(0, 1)}.{employee.LastName.Replace(" ", String.Empty)}".ToLower();
-
-            //    //Check if the user exists
-            //    var user = await _userManager.FindByNameAsync(username);
-
-            //    if (user == null)
-            //    {
-
-            //        // Create the user in the AspNetUser Table
-            //        var result = await _userManager.CreateAsync(user, password);
-
-            //        if (!result.Succeeded)
-            //        {
-            //            throw new Exception("Couldn't create user");
-            //        }
-
-            //        user = null;
-            //        //Find the user
-            //        user = await _userManager.FindByNameAsync(username);
-
-            //        if (user == null)
-            //        {
-            //            throw new Exception("Something wrong happened");
-            //        }
-
-            //        message = EmailBuilder.NewUserAssigned(employee, username, password);
-            //        message.Destination = user.Email;
-
-            //        //Add role to the user 
-            //        await _userManager.AddToRoleAsync(user, userModel.RoleName);
-
-            //        User cleanUser = new User
-            //        {
-            //            Id = new Guid(user.Id),
-            //            EmployeeId = userModel.EmployeeId
-            //        };
-
-            //        _cleanContext.Add(cleanUser);
-            //        _cleanContext.SaveChanges();
-
-                        
-            //    }
-            //    else
-            //    {
-            //        if (user.IsDown)
-            //        {
-            //            // Activate the user
-            //            user.IsDown = false;
-
-            //            //Add role to the User 
-            //            await _userManager.AddToRoleAsync(user, userModel.RoleName);
-
-            //            //Configure the Email 
-            //            message = EmailBuilder.EnabledUser(employee, username);
-
-            //        }
-
-            //    }
-
-
-
-
-
-
-            //    transaction.Commit();
-            //}catch(Exception ex)
-            //{
-            //    transaction.Rollback();
-            //}
-
-            //    using var transaction = _cleanContext.Database.BeginTransaction();
-
-            //    try
-            //    {
-            //        EmailMessage message=new();
-            //        // your transactional code
-            //        var employee = _cleanContext.Employees.FirstOrDefault(e => e.Id == userModel.EmployeeId);
-
-            //        if (employee == null)
-            //        {
-            //            throw new Exception("Couldn't Find Employee");
-            //        }      
-
-            //        _context.Database.UseTransaction(transaction.GetDbTransaction());
-
-            //        // your transactional code
-            //        var username = $"{employee.FirstName.Substring(0, 1)}.{employee.LastName.Replace(" ", String.Empty)}".ToLower();
-
-            //        //Check if the user exists
-            //        var user = await _userManager.FindByNameAsync(username);
-
-            //        if (user == null)
-            //        {
-            //            user = new ApplicationUser
-            //            {
-            //                UserName = username,
-            //                Email = "ygabdelo@gmail.com",
-            //                IsDown = false,
-            //                IsFirstLogin = true,
-
-            //            };
-
-            //            PasswordGenerator generator = new PasswordGenerator();
-            //            string password = generator.Generate();
-
-            //            // Create the user in the AspNetUser Table
-            //var result = await _userManager.CreateAsync(user, password);
-
-            //if (!result.Succeeded)
-            //{
-            //    throw new Exception("Couldn't create user");
-            //}
-
-            //            user = null;
-            //            //Find the user
-            //            user = await _userManager.FindByNameAsync(username);
-
-            //            if (user == null)
-            //            {
-            //                throw new Exception("Something wrong happened");
-            //            }
-
-            //            message = EmailBuilder.NewUserAssigned(employee, username, password);
-            //            message.Destination = user.Email;
-
-            //            //Add role to the user 
-            //            await _userManager.AddToRoleAsync(user, userModel.RoleName);
-
-            //            User cleanUser = new User
-            //            {
-            //                Id = new Guid(user.Id),
-            //                EmployeeId = userModel.EmployeeId
-            //            };
-
-            //            _cleanContext.Add(cleanUser);
-            //        }
-            //        else
-            //        {
-            //            if (user.IsDown)
-            //            {
-            //                // Activate the user
-            //                user.IsDown = false;
-
-            //                //Add role to the User 
-            //                await _userManager.AddToRoleAsync(user, userModel.RoleName);
-
-            //                //Configure the Email 
-            //                message = EmailBuilder.EnabledUser(employee, username);
-
-            //            }
-            //        }
-
-
-            //        _context.SaveChanges();
-
-
-            //        _cleanContext.SaveChanges();
-
-
-            //        await _mailService.SendEmailAsync(message);
-
-            //        // Commit transaction if all commands succeed, transaction will auto-rollback when disposed if either commands fails
-            //        transaction.Commit();
-
-            //}
-            //    catch (Exception ex)
-            //    {
-            //        transaction.Rollback();
-            //       // handle exception
-            //       return new Result { IsFailure=true,Reason=ex.Message };
-            //    }
-
-            return new Result();
+            
 
         }
-        
+
+        public async Task<Result> RemoveRoleAsync(string byUserId, UserRoleModel pairing)
+        {
+            try
+            {
+                var user = _context.Users.FirstOrDefault(u => u.Id == pairing.UserId);
 
 
+                if (user == null || (byUserId == user.Id))
+                {
+                    throw new Exception("User Not Found");
+                }
+
+                await _userManager.RemoveFromRoleAsync(user, pairing.RoleName);
+
+
+                _context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                return new Result { IsFailure = true };
+            }
+
+            return new Result();
+        }
     }
 }
