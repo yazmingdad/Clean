@@ -69,20 +69,20 @@ namespace Clean.Infrastructure.Email
         {
             EmailMessage message = new EmailMessage();
             StringBuilder sb = new StringBuilder();
-            message.Subject = "Votre mot de passe a été changé";
-            sb.Append($"Bonjour");
+            message.Subject = "Your password has been reset";
+            sb.Append($"Hello");
             sb.AppendLine("<br/>");
             sb.AppendLine("<br/>");
-            sb.AppendLine("Votre mot de passe a été rénitialisé par l'Administrateur suite à votre demande");
+            sb.AppendLine("An Administrator has reset your password,");
             sb.AppendLine("<br/>");
             sb.AppendLine("<br/>");
-            sb.Append("Pour se connecter :");
+            sb.Append("To Log in use the following credentials :");
             sb.AppendLine("<br/>");
             sb.AppendLine("<br/>");
-            sb.AppendLine($"Utilisateur :{username}");
+            sb.AppendLine($"User :{username}");
             sb.AppendLine("<br/>");
             sb.AppendLine("<br/>");
-            sb.AppendLine($"Mot de passe : {password}");
+            sb.AppendLine($"Password : {password}");
             message.Body = sb.ToString();
             return message;
         }

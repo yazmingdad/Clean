@@ -17,5 +17,7 @@ namespace Clean.Infrastructure.Identity.Services
         Task<Result> RemoveRoleAsync(string byUserId, UserRoleModel userModel);
 
         Result DisableUser(string byUserId, string userId);
+
+        Task<Result> ResetPasswordAsync(string byUserId, string userId);
     }
 }

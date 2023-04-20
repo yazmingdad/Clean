@@ -115,11 +115,28 @@ namespace Clean.Auth.WebApp.Controllers
         [Authorize(Roles = "Administrator")]
         [Route("disableuser")]
 
-        public IActionResult DisableUserAsync(UserIdModel userId)
+        public IActionResult DisableUser(UserIdModel userId)
         {
             string byUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var output = _userService.DisableUser(byUserId, userId.UserId);
+
+            if (output.IsFailure)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Administrator")]
+        [Route("resetpassword")]
+        public async Task<IActionResult> ResetPasswordAsync(UserIdModel userId)
+        {
+            string byUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var output = await _userService.ResetPasswordAsync(byUserId, userId.UserId);
 
             if (output.IsFailure)
             {

@@ -7,13 +7,7 @@ using Clean.Infrastructure.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.Options;
 using System.Data;
-using System.Reflection.Metadata;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using System.Xml.Linq;
-using System.Security.Claims;
 
 namespace Clean.Infrastructure.Identity.Services
 {
@@ -362,6 +356,53 @@ namespace Clean.Infrastructure.Identity.Services
                 return new Result { IsFailure = true };
             }
 
+            return new Result();
+        }
+
+        public async Task<Result> ResetPasswordAsync(string byUserId, string userId)
+        {
+            try
+            {
+                EmailMessage message = new();
+
+                //Retrieve the Admin User account 
+                var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+
+
+                if (user == null || (byUserId == user.Id) || user.UserName.ToLower() == "cleaner")
+                {
+                    throw new Exception("User Not Found");
+                }
+
+
+
+                //Generate a Token
+                string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                //Generate a password
+                PasswordGenerator generator = new PasswordGenerator();
+                string password = generator.Generate();
+
+                message = EmailBuilder.PasswordChanged(user.UserName, password);
+
+                //Reset the password
+                await _userManager.ResetPasswordAsync(user, resetToken, password);
+
+                //Set IsFirstLogin to true
+
+                user.IsFirstLogin = true;
+
+                _context.SaveChanges();
+
+                message.Destination = user.Email;
+                await _mailService.SendEmailAsync(message);
+
+            }
+            catch (Exception ex)
+            {
+                return new Result { IsFailure = true };
+            }
             return new Result();
         }
     }
