@@ -405,5 +405,56 @@ namespace Clean.Infrastructure.Identity.Services
             }
             return new Result();
         }
+
+        public async Task<Result> SetPasswordAsync(string userId,PasswordSetModel model)
+        {
+            var transaction = _context.Database.BeginTransaction();
+            try
+            {
+                var user = await _userManager.FindByIdAsync(userId);
+
+                if(user == null)
+                {
+                    throw new Exception("User Not Found");
+                }
+
+                if(user.IsFirstLogin)
+                {
+                    string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                    //Reset the password
+                     var result = await _userManager.ResetPasswordAsync(user, resetToken, model.Password);
+
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception("Password Reset Failed");
+                    }
+
+                    user.IsFirstLogin = false;
+                    await _userManager.UpdateAsync(user);
+                }
+                else
+                {
+                    //change the password
+                    var result = await _userManager.ChangePasswordAsync(user, model.OldPassword,
+                                               model.Password);
+
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception("Password Reset Failed");
+                    }
+                }
+
+                _context.SaveChanges();
+                transaction.Commit();
+            }
+            catch(Exception ex)
+            {
+                transaction.Rollback();
+                return new Result { IsFailure = true ,Reason= "Password Reset Failed" };
+            }
+
+            return new Result();
+        }
     }
 }

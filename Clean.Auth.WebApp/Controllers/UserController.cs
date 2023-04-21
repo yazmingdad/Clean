@@ -1,4 +1,5 @@
-﻿using Clean.Core.Models.Auth;
+﻿using Castle.Core.Internal;
+using Clean.Core.Models.Auth;
 using Clean.Core.Models.Company;
 using Clean.Infrastructure.CleanDb.Models;
 using Clean.Infrastructure.Identity.Services;
@@ -139,6 +140,28 @@ namespace Clean.Auth.WebApp.Controllers
             var output = await _userService.ResetPasswordAsync(byUserId, userId.UserId);
 
             if (output.IsFailure)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Administrator")]
+        [Route("setpassword")]
+        public async Task<IActionResult> SetPasswordAsync(PasswordSetModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var output = await  _userService.SetPasswordAsync(userId,model);
+
+            if(output.IsFailure)
             {
                 return BadRequest();
             }

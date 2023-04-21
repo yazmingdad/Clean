@@ -19,5 +19,7 @@ namespace Clean.Infrastructure.Identity.Services
         Result DisableUser(string byUserId, string userId);
 
         Task<Result> ResetPasswordAsync(string byUserId, string userId);
+
+        Task<Result> SetPasswordAsync(string userId,PasswordSetModel model);
     }
 }
