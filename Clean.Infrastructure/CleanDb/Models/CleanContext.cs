@@ -20,6 +20,14 @@ namespace Clean.Infrastructure.CleanDb.Models
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Rank> Ranks { get; set; }
         public DbSet<User> Users { get; set; }
+
+        public DbSet<Mission> Missions { get; set; }
+
+        public DbSet<MissionDestination> MissionDestinations { get; set; }
+
+        public DbSet<MissionParticipant> MissionParticipants { get; set; }
+
+        public DbSet<Status> statuses { get; set; }
         public CleanContext(DbContextOptions<CleanContext> options) : base(options)
         {}
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -89,6 +97,22 @@ namespace Clean.Infrastructure.CleanDb.Models
                 em.HasOne<Rank>().WithMany().HasForeignKey(e => e.RankId).IsRequired();
                 em.HasOne<Department>().WithMany().HasForeignKey(e => e.DepartmentId).IsRequired();
                 em.ToTable("Employees");
+            });
+
+            modelBuilder.Entity<Status>(s =>
+            {
+                s.HasKey(p => p.Id);
+                s.Property(p => p.Name).HasColumnType("nvarchar(35)").IsRequired();
+                s.ToTable("Statuses");
+            });
+
+
+            modelBuilder.Entity<MissionDestination>(md =>
+            {
+                md.HasKey(p => p.Id);
+                md.HasOne<City>().WithMany().HasForeignKey(md => md.DestinationId).IsRequired();
+                md.HasOne<Mission>().WithMany().HasForeignKey(md => md.MissionId).IsRequired();
+                md.ToTable("MissionDestinations");
             });
 
 
