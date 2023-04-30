@@ -27,7 +27,7 @@ namespace Clean.Infrastructure.CleanDb.Models
 
         public DbSet<MissionParticipant> MissionParticipants { get; set; }
 
-        public DbSet<Status> statuses { get; set; }
+        public DbSet<Status> Statuses { get; set; }
         public CleanContext(DbContextOptions<CleanContext> options) : base(options)
         {}
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -112,8 +112,39 @@ namespace Clean.Infrastructure.CleanDb.Models
                 md.HasKey(p => p.Id);
                 md.HasOne<City>().WithMany().HasForeignKey(md => md.DestinationId).IsRequired();
                 md.HasOne<Mission>().WithMany().HasForeignKey(md => md.MissionId).IsRequired();
+                md.Property(p => p.Order).HasColumnType("int").IsRequired();
                 md.ToTable("MissionDestinations");
             });
+
+            modelBuilder.Entity<MissionParticipant>(mp =>
+            {
+                mp.HasKey(p => p.Id);
+                mp.HasOne<Employee>().WithMany().HasForeignKey(mp => mp.EmployeeId).IsRequired();
+                mp.HasOne<Mission>().WithMany().HasForeignKey(mp => mp.MissionId).IsRequired();
+                mp.ToTable("MissionParticipants");
+            });
+
+            modelBuilder.Entity<Mission>(m =>
+            {
+                m.HasKey(p => p.Id);
+                m.HasOne<Department>().WithMany().HasForeignKey(m => m.DepartmentId).IsRequired();
+                m.HasOne<Status>().WithMany().HasForeignKey(m => m.StatusId).IsRequired();
+                m.HasOne<City>().WithMany().HasForeignKey(m => m.StartCityId).IsRequired();
+                m.HasOne<User>().WithMany().HasForeignKey(m => m.ByUserId).IsRequired();
+                m.Property(p => p.Priority).HasConversion<int>().IsRequired();
+                m.Property(p => p.Code).HasColumnType("nvarchar(50)").IsRequired();
+                m.Property(p => p.Title).HasColumnType("nvarchar(200)").IsRequired();
+                m.Property(p => p.Description).HasColumnType("nvarchar(max)").IsRequired();
+                m.Property(p => p.Budget).HasColumnType("int").IsRequired();
+                m.Property(p => p.Cost).HasColumnType("int").IsRequired();
+                m.Property(p => p.CreatedDate).HasDefaultValueSql("GetUtcDate()");
+                m.Property(p => p.StartDate).HasColumnType("datetime2(3)").IsRequired();
+                m.Property(p => p.EndDate).HasColumnType("datetime2(3)").IsRequired();
+                m.Property(p=>p.Distance).HasColumnType("int").IsRequired();
+                m.Property(p=>p.IsInCountry).HasColumnType("bit").IsRequired();
+                m.ToTable("Missions");
+            });
+
 
 
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))

@@ -15,7 +15,7 @@ namespace Clean.Infrastructure.CleanDb.Models
 
         public int StartCityId { get; set; }
 
-        public int ByUserId { get; set; }
+        public Guid ByUserId{ get; set; }
 
         public Priority Priority { get; set; }
 
@@ -37,6 +37,6 @@ namespace Clean.Infrastructure.CleanDb.Models
 
         public int Distance { get; set; }
 
-        public bool IsInCountry { get; set; }
+        public bool IsInCountry { get; set; } = true;
     }
 }
