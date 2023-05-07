@@ -53,6 +53,9 @@
     <None Update="CleanDb\Seed\Data\Initial\ranks.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="CleanDb\Seed\Data\Initial\statuses.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

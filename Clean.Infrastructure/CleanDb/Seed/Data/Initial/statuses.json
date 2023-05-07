@@ -1,0 +1,6 @@
+[
+  { "Name": "Created" },
+  { "Name": "InProgress" },
+  { "Name": "Completed" },
+  { "Name": "Cancelled" }
+]

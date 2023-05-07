@@ -302,6 +302,27 @@ namespace Clean.Infrastructure.CleanDb.Seed
             }
         }
 
+
+        private static void InsertStatuses(CleanContext cleanContext)
+        {
+            var statuses = Loader.LoadFromJson<Status>("statuses");
+            foreach (var item in statuses)
+            {
+                var type = cleanContext.Statuses.FirstOrDefault(s => s.Name == item.Name);
+
+                if (type == null)
+                {
+                    type = item;
+                    cleanContext.Statuses.Add(type);
+                    cleanContext.SaveChanges();
+
+                    if (type.Id <= 0)
+                    {
+                        throw new Exception($"Could not Insert {item.Name} Status");
+                    }
+                }
+            }
+        }
         public static async Task SeedAsync(CleanContext cleanContext,UserManager<ApplicationUser> userManager)
         {
 
@@ -331,6 +352,10 @@ namespace Clean.Infrastructure.CleanDb.Seed
                 var rootEmployee = InsertRootEmployee(cleanContext,rootRank, rootDepartment,user);            
 
                 InsertRootUser(cleanContext, rootEmployee, user);
+
+                //Mission
+
+                InsertStatuses(cleanContext);
 
                 cleanContext.SaveChanges();
             }

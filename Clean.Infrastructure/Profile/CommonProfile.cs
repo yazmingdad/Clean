@@ -37,6 +37,9 @@ namespace Clean.Infrastructure.Profile
             this.CreateMap<DataModel.Rank, CoreModel.Company.Rank>();
             this.CreateMap<CoreModel.Company.Rank, DataModel.Rank>();
 
+            this.CreateMap<DataModel.Mission, CoreModel.Mission.MissionInsert>();
+            this.CreateMap<CoreModel.Mission.MissionInsert, DataModel.Mission>();
+
 
 
         }
