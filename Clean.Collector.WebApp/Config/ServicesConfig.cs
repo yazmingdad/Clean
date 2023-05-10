@@ -11,6 +11,7 @@ namespace Clean.Collector.WebApp.Config
             services.AddTransient<IDepartmentService, DepartmentService>();
             services.AddTransient<IEmployeeService, EmployeeService>();
             services.AddTransient<ILocalizationService, LocalizationService>();
+            services.AddTransient<IMissionService, MissionService>();
         }
     }
 }
