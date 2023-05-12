@@ -40,6 +40,9 @@ namespace Clean.Infrastructure.Profile
             this.CreateMap<DataModel.Mission, CoreModel.Mission.MissionInsert>();
             this.CreateMap<CoreModel.Mission.MissionInsert, DataModel.Mission>();
 
+            this.CreateMap<DataModel.Status, CoreModel.Mission.Status>();
+            this.CreateMap<CoreModel.Mission.Status, DataModel.Status>();
+
 
 
         }

@@ -1,6 +1,6 @@
-﻿using Clean.Core.Models.Company;
+﻿using Clean.Core;
+using Clean.Core.Models.Company;
 using Clean.Core.Models.Mission;
-using Clean.Infrastructure.CleanDb.Models;
 using Clean.Infrastructure.CleanDb.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -24,6 +24,38 @@ namespace Clean.Collector.WebApp.Controllers
             _missionService= missionService;
         }
 
+        [HttpGet]
+        [Route("active")]
+        public IEnumerable<Mission> Get()
+        {
+            return _missionService.GetAll();
+        }
+
+        [HttpGet]
+        [Route("priorities")]
+        public IActionResult GetPriorities()
+        {
+            try
+            {
+               var output = Enum.GetValues(typeof(Priority))
+                    .Cast<Priority>()
+                    .Select(v => new
+                    {
+                        Id= (int) v,
+                        Value= v.ToString()
+                    })
+                    .ToList();
+
+                return Ok(output);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+
+            
+        }
+
         [HttpPost]
         [Authorize(Roles = "Member")]
         public IActionResult Insert(MissionInsert mission)
@@ -32,6 +64,7 @@ namespace Clean.Collector.WebApp.Controllers
             string byUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             mission.ByUserId= new Guid(byUserId);
+            
 
             var output = _missionService.Insert(mission);
 

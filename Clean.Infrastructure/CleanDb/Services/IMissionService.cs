@@ -12,5 +12,6 @@ namespace Clean.Infrastructure.CleanDb.Services
     public interface IMissionService
     {
         Result Insert(MissionInsert mission);
+        List<Mission> GetAll(bool isActive = true);
     }
 }
